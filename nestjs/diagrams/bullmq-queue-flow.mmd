@@ -1,0 +1,15 @@
+sequenceDiagram
+  participant API as Controller / Service
+  participant Q as BullMQ queue (Redis)
+  participant W as Worker (@Processor)
+  participant X as External service
+  API->>Q: queue.add("send", data, attempts 3)
+  API-->>API: Respond 202 immediately
+  Q->>W: Deliver job
+  W->>X: Do slow work
+  alt success
+    W-->>Q: completed
+  else failure
+    W-->>Q: failed, retry with backoff
+    Q->>W: Redeliver job
+  end

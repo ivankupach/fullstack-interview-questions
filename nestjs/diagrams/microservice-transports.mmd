@@ -1,0 +1,11 @@
+sequenceDiagram
+  participant GW as API gateway (ClientProxy)
+  participant B as Transport (Redis, NATS, RMQ, Kafka, gRPC)
+  participant S as Orders microservice
+  GW->>B: send("order.create", payload)
+  B->>S: @MessagePattern("order.create")
+  S-->>B: reply
+  B-->>GW: Observable emits result
+  GW->>B: emit("order.created", event)
+  B->>S: @EventPattern("order.created")
+  Note over GW,S: emit is fire-and-forget, no reply

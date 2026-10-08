@@ -1,0 +1,10 @@
+flowchart TB
+  S["NestFactory.create"] --> A["onModuleInit"]
+  A --> B["onApplicationBootstrap"]
+  B --> L["app.listen: serving traffic"]
+  L --> SIG["SIGTERM or app.close()"]
+  SIG --> C["onModuleDestroy"]
+  C --> D["beforeApplicationShutdown(signal)"]
+  D --> E["Server stops accepting connections"]
+  E --> F["onApplicationShutdown(signal)"]
+  F --> X["Process exits"]

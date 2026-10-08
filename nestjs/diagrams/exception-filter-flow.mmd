@@ -1,0 +1,10 @@
+flowchart TB
+  T["Exception thrown in guard, pipe, interceptor or handler"] --> Q{"Filter bound at route?"}
+  Q -- matches @Catch type --> H["Route filter handles"]
+  Q -- no --> Q2{"Filter bound at controller?"}
+  Q2 -- matches --> H2["Controller filter handles"]
+  Q2 -- no --> Q3{"Global filter?"}
+  Q3 -- matches --> H3["Global filter handles"]
+  Q3 -- no --> D{"HttpException?"}
+  D -- yes --> R1["Built-in: status and message from exception"]
+  D -- no --> R2["Built-in: 500 Internal server error"]

@@ -1,0 +1,6 @@
+flowchart TB
+  C["OrdersController"] --> S["OrdersService"]
+  S --> R["RequestContext provider (REQUEST scope)"]
+  S --> Rep["OrdersRepository"]
+  R -. makes dependents request scoped .-> S
+  S -. bubbles up .-> C

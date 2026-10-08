@@ -1,0 +1,12 @@
+flowchart TB
+  Req["Incoming request"] --> MW["Middleware"]
+  MW --> G["Guards"]
+  G --> I1["Interceptors (before)"]
+  I1 --> P["Pipes"]
+  P --> H["Route handler"]
+  H --> I2["Interceptors (after)"]
+  I2 --> Res["Response"]
+  G -. throws .-> F["Exception filters"]
+  P -. throws .-> F
+  H -. throws .-> F
+  F --> Res

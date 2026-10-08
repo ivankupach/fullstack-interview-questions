@@ -1,0 +1,11 @@
+flowchart LR
+  App["AppModule"] --> Users["UsersModule"]
+  App --> Orders["OrdersModule"]
+  App --> Config["ConfigModule (global)"]
+  Orders -- imports --> Users
+  Users -- exports UsersService --> Orders
+  Users --> Db["DatabaseModule"]
+  Orders --> Db
+  Db -- exports DataSource --> Users
+  Config -. available everywhere .-> Users
+  Config -. available everywhere .-> Orders

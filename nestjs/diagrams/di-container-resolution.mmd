@@ -1,0 +1,12 @@
+flowchart TB
+  A["NestFactory.create(AppModule)"] --> B["Scan module graph via imports"]
+  B --> C["Register providers and controllers per module"]
+  C --> D["Read constructor param types or @Inject tokens"]
+  D --> E{"Token in own module?"}
+  E -- yes --> J["Instantiate and cache"]
+  E -- no --> F{"Exported by an imported module?"}
+  F -- yes --> J
+  F -- no --> G{"Global module provider?"}
+  G -- yes --> J
+  G -- no --> X["Error: Nest can't resolve dependencies"]
+  J --> K["Call onModuleInit hooks"]
