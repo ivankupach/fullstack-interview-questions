@@ -1,6 +1,6 @@
 # Databases Interview Questions
 
-Database-agnostic fundamentals for fullstack interviews: relational design, SQL, transactions, indexing, scaling, and operations. PostgreSQL-specific internals live in the separate [`postgres/`](../postgres/) topic.
+Database-agnostic fundamentals for fullstack interviews: relational design, SQL, transactions, indexing, scaling, operations, and how deleted data is cleaned up. PostgreSQL-specific internals live in the separate [`postgres/`](../postgres/) topic.
 
 **Levels:** `🟢 Junior` · `🟡 Middle` · `🔴 Senior`
 
@@ -62,6 +62,10 @@ Database-agnostic fundamentals for fullstack interviews: relational design, SQL,
   44. [OLTP vs OLAP: what is the difference?](#44-oltp-vs-olap-what-is-the-difference)
   45. [How do you implement soft deletes, and what are the trade-offs?](#45-how-do-you-implement-soft-deletes-and-what-are-the-trade-offs)
   46. [What are the multi-tenancy patterns for a SaaS database?](#46-what-are-the-multi-tenancy-patterns-for-a-saas-database)
+- **Deleting Data & Disk Space**
+  47. [What is the difference between DELETE, TRUNCATE and DROP?](#47-what-is-the-difference-between-delete-truncate-and-drop)
+  48. [Why doesn't DELETE free up disk space?](#48-why-doesnt-delete-free-up-disk-space)
+  49. [What is VACUUM and why does a database need it?](#49-what-is-vacuum-and-why-does-a-database-need-it)
 
 ## Relational Model & Keys
 
@@ -1518,6 +1522,8 @@ Decision questions:
 5. **Data shape**: highly variable nested documents vs. normalized entities.
 6. **Operations**: managed service available? Backup/PITR, failover, expertise on the team.
 
+![SQL vs NoSQL decision tree](./diagrams/sql-vs-nosql-decision.png)
+
 Example: an e-commerce platform
 
 | Concern | Store | Why |
@@ -1774,5 +1780,149 @@ Notes:
 - Migrations: schema-per-tenant needs orchestration (batches, per-tenant state, partial failure handling).
 
 > **Follow-up:** How do you prevent cross-tenant leaks in a shared schema? Defense in depth: RLS, mandatory tenant scoping in the data layer (no raw unscoped queries), composite FKs, and automated tests that attempt cross-tenant access.
+
+[↑ Back to top](#table-of-contents)
+
+## Deleting Data & Disk Space
+
+### 47. What is the difference between DELETE, TRUNCATE and DROP?
+
+`🟢 Junior` · `#sql` `#ddl` `#dml`
+
+`DELETE` removes **selected rows** one by one and logs each one. `TRUNCATE` removes **all rows** at once by deallocating the table's storage. `DROP` removes the **whole table**: data, structure, indexes, constraints and permissions.
+
+| | `DELETE FROM t WHERE ...` | `TRUNCATE t` | `DROP TABLE t` |
+|---|---|---|---|
+| What goes | Rows matching `WHERE` (or all) | All rows | Rows + table definition |
+| Category | DML | DDL (in most engines) | DDL |
+| `WHERE` clause | Yes | No | No |
+| Speed on a big table | Slow: per-row work, WAL/redo for each row, index updates | Near-instant: swaps in new empty files | Near-instant |
+| Row triggers (`ON DELETE`) | Fire | Do **not** fire | Do not fire |
+| Rollback | Yes | PostgreSQL / SQL Server: yes, inside a transaction. MySQL / Oracle: **no** (implicit commit) | Same as TRUNCATE |
+| Lock | Row locks; others can keep reading and writing | Exclusive table lock (blocks even `SELECT` in PostgreSQL) | Exclusive table lock |
+| Auto-increment / identity | Keeps counting | MySQL / SQL Server: reset. PostgreSQL: kept unless `RESTART IDENTITY` | Gone with the table |
+| Referenced by a foreign key | Allowed (FK actions apply per row) | Fails unless the referencing tables are truncated too (`CASCADE` in PostgreSQL) | Fails unless `CASCADE` |
+| Disk space | **Not** returned to the OS ([Q48](#48-why-doesnt-delete-free-up-disk-space)) | Returned immediately | Returned immediately |
+
+```sql
+-- Remove some rows: DELETE is the only option
+DELETE FROM sessions WHERE expires_at < now();
+
+-- Empty a staging table and reset its id sequence (PostgreSQL)
+TRUNCATE staging_events RESTART IDENTITY;
+
+-- PostgreSQL: TRUNCATE is transactional
+BEGIN;
+TRUNCATE staging_events;
+ROLLBACK;            -- the rows are back
+
+-- Truncate a parent and every table that references it
+TRUNCATE customers CASCADE;   -- careful: also empties orders, invoices, ...
+```
+
+Practical rules:
+
+- Need a `WHERE`, triggers, or minimal locking on a live table? Use `DELETE`.
+- Emptying a whole staging, temp or test table? Use `TRUNCATE`. It is much faster and gives the space back.
+- Deleting most rows of a huge live table? Neither is great. Either copy the rows you keep into a new table and swap it in, or partition by time and `DROP`/detach old partitions. Dropping a partition is the cheapest delete there is.
+- Use `DELETE` in batches (`... WHERE id IN (SELECT id ... LIMIT 10000)`) on hot tables, so you don't hold locks and build replication lag with one giant transaction.
+
+> **Follow-up:** Why is TRUNCATE "not MVCC-safe" in PostgreSQL? A transaction whose snapshot was taken before the TRUNCATE committed will see the table as empty once it reads it, instead of seeing the old rows. DELETE doesn't have this problem, because old row versions stay visible to old snapshots.
+
+[↑ Back to top](#table-of-contents)
+
+### 48. Why doesn't DELETE free up disk space?
+
+`🟡 Middle` · `#storage` `#mvcc` `#internals`
+
+Because `DELETE` doesn't remove bytes from the data file. It **marks rows as deleted** inside their pages. Other transactions may still need to see those rows, and the database keeps the file allocated so it can reuse the space for future inserts. Shrinking the file needs a rewrite (`VACUUM FULL`, `OPTIMIZE TABLE`), a `TRUNCATE`, or a dropped partition.
+
+There are three layers to the reason:
+
+1. **MVCC needs the old version.** In PostgreSQL a `DELETE` only sets the row's `xmax` (the id of the deleting transaction). The row physically stays in the page, because a concurrent transaction with an older snapshot, or a replica query, may still need to read it. Until no transaction can see it, it can't be removed. InnoDB similarly marks the record "delete-marked" and keeps the old version in its undo log.
+2. **Tables are files of fixed-size pages** (8 KB in PostgreSQL, 16 KB in InnoDB). Deleted rows leave holes scattered across pages. The database can only hand space back to the operating system by cutting pages off the **end** of the file; it can't punch holes in the middle of the file and move the remaining rows around without a full rewrite.
+3. **Reusing space is cheaper than returning it.** A table that had 1M rows will likely have 1M again soon. Keeping the pages and filling the holes avoids constant grow/shrink cycles and fragmentation at the filesystem level.
+
+What it looks like (measured on PostgreSQL 18, autovacuum off, 1M rows of ~200 bytes):
+
+| Step | Table size on disk |
+|---|---|
+| Insert 1,000,000 rows | 237 MB |
+| `DELETE` 50% of rows (every second id) | **237 MB**: nothing changed on disk |
+| `VACUUM` | **237 MB**: dead rows cleaned, space now *reusable* |
+| Insert 500,000 new rows | **237 MB**: new rows filled the holes, file didn't grow |
+| `DELETE` all rows with id > 100,000, then `VACUUM` | 24 MB: the empty pages were at the *end* of the file, so VACUUM could cut them off |
+| `DELETE` another third, then `VACUUM FULL` | 8 MB: the table was rewritten compactly |
+
+```sql
+-- PostgreSQL: see table size and dead rows
+SELECT relname,
+       pg_size_pretty(pg_total_relation_size(relid)) AS total_size,
+       n_live_tup, n_dead_tup, last_autovacuum
+FROM pg_stat_user_tables
+ORDER BY n_dead_tup DESC
+LIMIT 10;
+```
+
+How each engine gets the space back:
+
+| Engine | Space reused automatically | Return space to the OS |
+|---|---|---|
+| PostgreSQL | After `VACUUM` / autovacuum marks it free | `VACUUM FULL` or `pg_repack` (rewrite), `TRUNCATE`, drop partition. Plain `VACUUM` only trims empty pages at the end of the file |
+| MySQL InnoDB | Yes, purge thread frees delete-marked records | `OPTIMIZE TABLE` (rebuilds, needs `innodb_file_per_table`), `TRUNCATE`, drop partition |
+| SQL Server | Yes, within the data file | `ALTER INDEX ... REBUILD`, then `DBCC SHRINKFILE` (causes fragmentation; rarely recommended) |
+| SQLite | Free pages go on a freelist | `VACUUM` (rewrites the database file) or `auto_vacuum` |
+
+Indexes have the same problem: deleting rows leaves index pages half empty, and they only shrink with a `REINDEX` (PostgreSQL: `REINDEX CONCURRENTLY`).
+
+> **Follow-up:** You deleted 80% of a 500 GB table and the disk is still full. What do you do? Don't run `VACUUM FULL` on production: it takes an exclusive lock for the whole rewrite and temporarily needs space for a second copy. Use `pg_repack` (online rewrite with a brief lock) or copy the kept rows to a new table and swap names. Next time, partition by time so old data goes away with `DROP PARTITION`.
+
+[↑ Back to top](#table-of-contents)
+
+### 49. What is VACUUM and why does a database need it?
+
+`🟡 Middle` · `#postgres` `#mvcc` `#maintenance`
+
+`VACUUM` is PostgreSQL's garbage collector for row versions. Every `UPDATE` and `DELETE` leaves a **dead row version** behind (MVCC), and `VACUUM` finds versions no transaction can see any more and marks their space reusable. It also updates the visibility map (for index-only scans), the free space map, and freezes old transaction ids so they don't wrap around. **Autovacuum** runs it automatically in the background.
+
+Why it's needed: in PostgreSQL an `UPDATE` is really "insert a new version + mark the old one dead". A table with heavy updates produces dead rows constantly. Without VACUUM:
+
+- **Bloat**: the table and its indexes keep growing even though the live data doesn't. Scans read more pages, the cache holds less useful data, queries slow down.
+- **Index-only scans stop working well**, because the visibility map isn't updated.
+- **Transaction ID wraparound**: transaction ids are 32-bit. If old rows are never frozen, PostgreSQL eventually refuses to start new transactions to protect data. This is the one thing that will take a production database down.
+
+![DELETE leaves dead rows; VACUUM makes the space reusable; VACUUM FULL shrinks the file](./diagrams/delete-vacuum-lifecycle.png)
+
+The variants:
+
+| Command | What it does | Locks | Shrinks the file? |
+|---|---|---|---|
+| `VACUUM` | Marks dead rows as free space, updates visibility/free space maps, freezes old rows | Doesn't block reads or writes | Only trims empty pages at the very end |
+| `VACUUM ANALYZE` | Same, plus refreshes planner statistics | Doesn't block reads or writes | Same |
+| `VACUUM FULL` | Rewrites the whole table and indexes into new compact files | **Exclusive lock**: blocks everything, needs extra disk for the copy | Yes |
+| Autovacuum | Runs `VACUUM`/`ANALYZE` per table when dead rows exceed a threshold (by default 50 rows + 20% of the table; PostgreSQL 18 also caps this at 100M rows via `autovacuum_vacuum_max_threshold`) | Same as `VACUUM`; yields to conflicting locks | Same as `VACUUM` |
+| `pg_repack` (extension) | Online alternative to `VACUUM FULL` | Brief lock only at the start and end | Yes |
+
+```sql
+-- Manual vacuum with progress details
+VACUUM (VERBOSE, ANALYZE) orders;
+
+-- Hot table: vacuum when 2% is dead instead of the default 20%
+ALTER TABLE orders SET (autovacuum_vacuum_scale_factor = 0.02);
+
+-- What's autovacuum doing right now?
+SELECT pid, relid::regclass, phase, heap_blks_scanned, heap_blks_total
+FROM pg_stat_progress_vacuum;
+```
+
+Common reasons VACUUM can't clean up dead rows, even though it runs:
+
+- A **long-running transaction** (or a session left `idle in transaction`) holds an old snapshot. Nothing newer than its start can be removed.
+- An **abandoned replication slot** or a replica with `hot_standby_feedback` and a long query.
+- A forgotten **prepared transaction** (`pg_prepared_xacts`).
+
+Other databases do the same job under different names: MySQL InnoDB has a background **purge** thread that cleans undo logs and delete-marked records, Oracle reuses undo segments, and SQLite's `VACUUM` is closer to PostgreSQL's `VACUUM FULL` (it rewrites the whole file). For tuning, bloat diagnosis and wraparound details, see the PostgreSQL topic: [VACUUM, VACUUM FULL and autovacuum](../postgres/README.md#14-what-do-vacuum-vacuum-full-and-autovacuum-do) and [tuning autovacuum and diagnosing bloat](../postgres/README.md#15-how-do-you-tune-autovacuum-and-diagnose-table-bloat).
+
+> **Follow-up:** Should you disable autovacuum on a busy table to save I/O? No. That trades a little I/O now for bloat and eventually a forced anti-wraparound vacuum later. Make autovacuum *more* aggressive on hot tables (lower scale factor, higher cost limit) instead.
 
 [↑ Back to top](#table-of-contents)

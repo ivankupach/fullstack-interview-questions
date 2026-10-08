@@ -1,0 +1,20 @@
+flowchart TB
+    subgraph S1["1 - After INSERT"]
+        direction LR
+        A1["Page 1<br/>live live live"] --- A2["Page 2<br/>live live live"] --- A3["Page 3<br/>live live live"]
+    end
+    subgraph S2["2 - After DELETE: rows only marked dead"]
+        direction LR
+        B1["Page 1<br/>live dead live"] --- B2["Page 2<br/>dead dead dead"] --- B3["Page 3<br/>live dead live"]
+    end
+    subgraph S3["3 - After VACUUM: space reusable, file same size"]
+        direction LR
+        C1["Page 1<br/>live free live"] --- C2["Page 2<br/>free free free"] --- C3["Page 3<br/>live free live"]
+    end
+    subgraph S4["4 - After VACUUM FULL: rewritten, file shrinks"]
+        direction LR
+        D1["Page 1<br/>live live live"] --- D2["Page 2<br/>live"]
+    end
+    S1 -->|"DELETE"| S2
+    S2 -->|"VACUUM: no lock on reads/writes"| S3
+    S3 -->|"VACUUM FULL: exclusive lock"| S4

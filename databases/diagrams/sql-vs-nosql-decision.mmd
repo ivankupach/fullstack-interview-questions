@@ -1,0 +1,11 @@
+flowchart TB
+    Start(["New data store"]) --> Q1{"Need multi-row transactions<br/>or strict constraints?"}
+    Q1 -->|Yes| SQL["Relational DB<br/>PostgreSQL, MySQL"]
+    Q1 -->|No| Q2{"Main access pattern?"}
+    Q2 -->|"Lookup by key, TTL"| KV["Key-value<br/>Redis, DynamoDB"]
+    Q2 -->|"Whole aggregate by id,<br/>schema changes often"| DOC["Document<br/>MongoDB or jsonb"]
+    Q2 -->|"Huge write volume,<br/>known queries"| WIDE["Wide-column<br/>Cassandra, ScyllaDB"]
+    Q2 -->|"Relationship traversals"| GRAPH["Graph<br/>Neo4j"]
+    Q2 -->|"Ad hoc queries, joins,<br/>reporting"| SQL
+    Q2 -->|"Full-text relevance"| SEARCH["Search engine<br/>OpenSearch, Elasticsearch"]
+    SQL -.->|"outgrows one node?<br/>replicas, partitioning,<br/>then distributed SQL"| NEWSQL["CockroachDB, Spanner,<br/>YugabyteDB"]
