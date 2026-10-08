@@ -1,0 +1,30 @@
+flowchart TB
+  subgraph In["Intake"]
+    direction LR
+    S["Producers<br/>(services, cron)"] --> API["Notification API"] --> V["Validate, dedupe,<br/>prefs + quiet hours"] --> T["Template + i18n"]
+  end
+  PREF[("Preferences DB")]
+  Q["Per-channel queues"]
+  subgraph Workers["Channel workers"]
+    direction LR
+    PW["Push worker"]
+    EW["Email worker"]
+    SW["SMS worker"]
+  end
+  subgraph Prov["Providers"]
+    direction LR
+    APNS["APNs / FCM"]
+    ESP["Email provider"]
+    SMS["SMS provider"]
+  end
+  subgraph Rec["Outcomes"]
+    direction LR
+    DLQ["DLQ"]
+    LOG[("Delivery log")]
+  end
+  In --> Q
+  In --> PREF
+  Q --> Workers
+  Workers --> Prov
+  Workers -.->|"retry w/ backoff"| Q
+  Workers --> Rec

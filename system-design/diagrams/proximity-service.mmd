@@ -1,0 +1,12 @@
+flowchart LR
+  R["Rider app"] --> GW["API gateway"]
+  D["Driver app<br/>location every 4 s"] --> LS["Location service"]
+  LS --> RC[("Redis geo index<br/>cell to drivers, TTL")]
+  LS --> KF["Kafka"]
+  KF --> HS[("History store<br/>trips, analytics")]
+  GW --> MA["Matching service"]
+  MA -->|"query cell + neighbours"| RC
+  MA --> ETA["Routing / ETA service"]
+  MA --> TS["Trip service"]
+  TS --> TDB[("Trips DB")]
+  MA -->|"offer ride"| PUSH["Push to driver"]

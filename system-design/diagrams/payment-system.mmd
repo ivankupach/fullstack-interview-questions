@@ -1,0 +1,23 @@
+flowchart TB
+  subgraph Req["Request path"]
+    direction LR
+    C["Checkout"] -->|"Idempotency-Key"| API["Payment API"] --> PS["Payment service<br/>state machine"]
+  end
+  subgraph Own["Own state"]
+    direction LR
+    IK[("Idempotency store<br/>key to result")]
+    PDB[("Payments DB")]
+    OB[("Outbox table")]
+  end
+  subgraph Ext["External PSP"]
+    direction LR
+    PSP["External PSP"] -->|"webhook"| WH["Webhook handler<br/>verify + dedupe"]
+  end
+  subgraph Led["Ledger and reconciliation"]
+    direction LR
+    K["Event bus"] --> LG["Ledger service<br/>double-entry, append-only"] --> LDB[("Ledger DB")] --> RC["Reconciliation job"] --> ALERT["Mismatch queue"]
+  end
+  Req --> Own
+  Req <-->|"charge with same key / webhook result"| Ext
+  Own -->|"outbox relay"| Led
+  Ext -.->|"daily settlement file"| Led

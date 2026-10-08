@@ -1,0 +1,8 @@
+flowchart TB
+  subgraph Ring["Hash ring, walk clockwise"]
+    direction LR
+    A(("Node A<br/>A1 A2 A3")) -->|"next on ring"| B(("Node B<br/>B1 B2 B3")) -->|"next on ring"| C(("Node C<br/>C1 C2 C3"))
+    C -->|"wraps around"| A
+  end
+  K["Key lookup: hash the key, walk clockwise to the first node<br/>user:42 lands between A and B, goes to B<br/>user:77 lands between C and A, goes to A"] --> Ring
+  D["Add Node D between B and C:<br/>takes only the arc before it, about 1/N of keys move"] -.-> Ring

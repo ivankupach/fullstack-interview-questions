@@ -1,0 +1,25 @@
+flowchart TB
+  subgraph Front["Submit"]
+    direction LR
+    C["Clients"] --> API["Scheduler API"] --> JDB[("Jobs DB<br/>next_run_at index")]
+  end
+  subgraph Sched["Scheduler (leader or sharded)"]
+    direction LR
+    LE["Leader election<br/>etcd / ZooKeeper"] -.-> POLL["Poller<br/>claims due jobs"]
+  end
+  Q["Work queue"]
+  subgraph Pool["Worker fleet (heartbeat / lease on Jobs DB)"]
+    direction LR
+    W1["Worker"]
+    W2["Worker"]
+    W3["Worker"]
+  end
+  subgraph Out["Results"]
+    direction LR
+    RES[("Run history")]
+    DLQ["DLQ / alerts"]
+  end
+  Front -->|"due jobs"| Sched
+  Sched --> Q
+  Q --> Pool
+  Pool --> Out

@@ -1,0 +1,16 @@
+flowchart TB
+  subgraph Write["Write path"]
+    direction LR
+    G["Game servers"] -->|"score events"| API["Score API"] --> K["Kafka<br/>key = user_id"] --> W["Score writer"]
+  end
+  subgraph Store["Storage"]
+    direction LR
+    R[("Redis sorted set<br/>lb:global, lb:daily:date")] -.->|"replica"| RR[("Redis replica")]
+    DB[("SQL / NoSQL<br/>durable scores")] -.->|"rebuild on loss"| R
+  end
+  subgraph Read["Read path"]
+    direction LR
+    C["Client"] --> LAPI["Leaderboard API"] --> UP["User profile cache"]
+  end
+  Write -->|"ZINCRBY / ZADD, plus durable write"| Store
+  Read -->|"ZREVRANGE top 100<br/>ZREVRANK me"| Store

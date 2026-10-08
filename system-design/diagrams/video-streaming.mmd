@@ -1,0 +1,15 @@
+flowchart TB
+  subgraph Ingest["Upload and process"]
+    direction LR
+    UP["Uploader"] -->|"resumable"| RAW[("Raw blobs")] --> Q["Job queue"] --> TC["Split + transcode<br/>workers, 240p to 4K"]
+  end
+  subgraph Deliver["Package and deliver"]
+    direction LR
+    PK["Packager<br/>HLS / DASH"] --> OUT[("Segments +<br/>manifests")] --> CDN["Origin shield<br/>+ CDN edge"] --> P["Player<br/>ABR"]
+  end
+  subgraph Meta["Metadata"]
+    direction LR
+    API["Metadata API"] --> MD[("Metadata DB")]
+  end
+  Ingest --> Deliver
+  Deliver -.-> Meta

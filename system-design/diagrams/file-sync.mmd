@@ -1,0 +1,17 @@
+flowchart TB
+  subgraph Client["Desktop client"]
+    direction LR
+    W["File watcher"] --> CH["Chunker<br/>4 MB + SHA-256"] --> LDB[("Local state DB")]
+  end
+  subgraph Server["Metadata side"]
+    direction LR
+    MS["Metadata service"] --> MDB[("Metadata DB<br/>files, versions, chunk lists")]
+  end
+  BS[("Blob store<br/>content-addressed")]
+  subgraph Notify["Change propagation"]
+    direction LR
+    NQ["Change log / queue"] --> NS["Notification service<br/>long-poll / WS"] --> OD["Other devices"]
+  end
+  Client -->|"1. which chunks are missing?<br/>3. commit new file version"| Server
+  Client -->|"2. upload missing chunks"| BS
+  Server -->|"change event"| Notify

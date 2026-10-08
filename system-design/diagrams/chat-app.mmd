@@ -1,0 +1,12 @@
+flowchart LR
+  A["User A<br/>WebSocket"] --> G1["WS gateway 1"]
+  B["User B<br/>WebSocket"] --> G2["WS gateway 2"]
+  G1 --> CS["Chat service"]
+  CS --> ID["Seq / ID per<br/>conversation"]
+  CS --> MQ["Message bus<br/>Kafka"]
+  CS --> MDB[("Message store<br/>Cassandra / Scylla<br/>partition = conversation")]
+  MQ --> RT["Router"]
+  RT --> SR[("Session registry<br/>user to gateway<br/>Redis")]
+  RT --> G2
+  RT -.->|"offline"| PN["Push notification<br/>service"]
+  G1 --> PR[("Presence<br/>Redis TTL heartbeats")]

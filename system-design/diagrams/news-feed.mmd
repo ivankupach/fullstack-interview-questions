@@ -1,0 +1,12 @@
+flowchart LR
+  U["Poster"] --> PS["Post service"]
+  PS --> PDB[("Posts DB")]
+  PS --> Q["Fan-out queue"]
+  Q --> FW["Fan-out workers"]
+  FW --> GS[("Social graph<br/>followers")]
+  FW -->|"push post id<br/>(normal users)"| FC[("Feed cache<br/>Redis list per user")]
+  R["Reader"] --> FS["Feed service"]
+  FS --> FC
+  FS -->|"pull + merge<br/>celebrity posts"| PDB
+  FS --> HY["Hydrate:<br/>users, counts, media"]
+  HY --> PDB

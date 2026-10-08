@@ -1,0 +1,10 @@
+flowchart TB
+  subgraph R1["Understand"]
+    direction LR
+    A["1. Requirements<br/>functional + non-functional"] --> B["2. Estimates<br/>QPS, storage, bandwidth"] --> C["3. API<br/>endpoints, pagination"] --> D["4. Data model<br/>entities, access patterns"]
+  end
+  subgraph R2["Design and refine"]
+    direction LR
+    E["5. High-level design<br/>boxes and arrows"] --> F["6. Deep dives<br/>hardest 2-3 parts"] --> G["7. Trade-offs<br/>bottlenecks, failures"]
+  end
+  R1 --> R2

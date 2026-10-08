@@ -1,0 +1,13 @@
+flowchart TB
+  subgraph Online["Online path"]
+    direction LR
+    U["Browser<br/>debounce 100 ms"] --> CDN["CDN / edge cache<br/>short prefixes"] --> GW["API gateway"] --> SS["Suggestion service"] --> TC[("Prefix to top-K cache<br/>Redis")]
+  end
+  TR[("Trie / index shards<br/>top-K per node")]
+  subgraph Offline["Offline / near-real-time pipeline"]
+    direction LR
+    LG["Query logs"] --> KF["Kafka"] --> AG["Aggregator<br/>counts, decay"] --> BLD["Trie builder"]
+  end
+  Online -.->|"miss"| TR
+  Online -.->|"search submitted"| Offline
+  Offline -->|"publish new snapshot"| TR

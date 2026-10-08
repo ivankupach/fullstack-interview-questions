@@ -1,0 +1,7 @@
+flowchart TB
+  CFG[("Rules store<br/>limits per key / route")] -->|"push / poll"| GW["API gateway<br/>rate-limit middleware"]
+  C["Clients"] <-->|"requests in,<br/>429 + Retry-After out"| GW
+  GW <-->|"Lua script: atomic<br/>token bucket"| R[("Redis cluster<br/>sharded by key")]
+  GW -->|"allowed"| SVC["Backend services"]
+  GW -.->|"fallback if Redis down"| LOC["Local in-memory<br/>limiter (fail-open)"]
+  GW --> M["Metrics + alerts"]

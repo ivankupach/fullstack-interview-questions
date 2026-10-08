@@ -1,0 +1,16 @@
+flowchart LR
+  U["Client"] --> CDN["CDN / edge"]
+  CDN --> LB["Load balancer"]
+  subgraph App["Stateless services"]
+    W["Write API<br/>POST /urls"]
+    RD["Redirect API<br/>GET /code"]
+  end
+  LB --> W
+  LB --> RD
+  W --> IDG["ID generator<br/>range allocator"]
+  IDG --> Z[("Coordination<br/>ZooKeeper / etcd")]
+  W --> DB[("KV store<br/>code to long URL")]
+  RD --> CH[("Redis cache")]
+  CH -.->|"miss"| DB
+  RD --> K["Click events<br/>Kafka"]
+  K --> AN[("Analytics store")]

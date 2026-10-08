@@ -1,0 +1,18 @@
+flowchart TB
+  C["Clients"] --> DNS["DNS / GeoDNS"]
+  DNS --> L4["L4 LB<br/>TCP, fast, no HTTP parsing"]
+  subgraph L7["L7 LB / API gateways"]
+    direction LR
+    L7a["Gateway A"]
+    L7b["Gateway B"]
+  end
+  L4 --> L7
+  HC["Health checks"] -.-> L7
+  subgraph Pool["Stateless app pool"]
+    direction LR
+    S1["App 1"]
+    S2["App 2"]
+    S3["App 3"]
+  end
+  L7 --> Pool
+  Pool --> Store[("Shared state:<br/>DB / Redis")]

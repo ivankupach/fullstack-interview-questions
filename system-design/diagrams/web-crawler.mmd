@@ -1,0 +1,12 @@
+flowchart LR
+  SEED["Seed URLs"] --> FR["URL frontier<br/>priority + politeness queues"]
+  FR --> F["Fetcher fleet<br/>per-host rate limit"]
+  F --> DNS["DNS cache"]
+  F --> RB["robots.txt cache"]
+  F --> RAW[("Raw page store<br/>blob")]
+  F --> P["Parser / link extractor"]
+  P --> DD["Content dedupe<br/>SimHash"]
+  P --> UF["URL filter + normalizer"]
+  UF --> SEEN[("Seen-URL set<br/>Bloom filter + KV")]
+  SEEN -->|"new URLs"| FR
+  DD --> IDX["Indexer"]

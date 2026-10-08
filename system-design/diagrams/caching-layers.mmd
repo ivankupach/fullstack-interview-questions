@@ -1,0 +1,10 @@
+flowchart TB
+  subgraph Edge["Client and edge"]
+    direction LR
+    U["Browser<br/>HTTP cache"] --> CDN["CDN edge<br/>static + cacheable API"] --> GW["API gateway<br/>response cache"]
+  end
+  subgraph Back["App and data"]
+    direction LR
+    APP["App server<br/>in-process cache"] --> R[("Redis / Memcached<br/>distributed cache")] --> DB[("Database<br/>buffer pool + replicas")]
+  end
+  Edge --> Back

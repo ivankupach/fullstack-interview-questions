@@ -1,0 +1,20 @@
+flowchart LR
+  subgraph Prod["Producers"]
+    P1["Service A"]
+    P2["Service B"]
+  end
+  subgraph Log["Partitioned log (Kafka-style)"]
+    direction TB
+    T0["Partition 0"] ~~~ T1["Partition 1"] ~~~ T2["Partition 2"]
+  end
+  subgraph G1["Consumer group: billing"]
+    C1["Consumer 1"]
+    C2["Consumer 2"]
+  end
+  subgraph G2["Consumer group: analytics"]
+    C3["Consumer 3"]
+  end
+  Prod -->|"key hash"| Log
+  Log -->|"each partition to one consumer"| G1
+  Log -->|"every message, independent offsets"| G2
+  G1 -.->|"poison messages"| DLQ["Dead-letter queue"]
