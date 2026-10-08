@@ -1,0 +1,11 @@
+sequenceDiagram
+    participant JS as Page JS at app.com
+    participant B as Browser
+    participant API as API at api.com
+    JS->>B: fetch with JSON body and Authorization header
+    Note over B: Not a simple request, preflight needed
+    B->>API: OPTIONS with Origin and Access-Control-Request-Headers
+    API-->>B: 204 with Access-Control-Allow-Origin and Allow-Headers
+    B->>API: Actual POST with Origin
+    API-->>B: 200 with Access-Control-Allow-Origin
+    B-->>JS: Response exposed to JS

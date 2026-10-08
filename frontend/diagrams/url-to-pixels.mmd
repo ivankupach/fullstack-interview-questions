@@ -1,0 +1,14 @@
+sequenceDiagram
+    participant B as Browser
+    participant D as DNS
+    participant S as Server or CDN
+    Note over B: Check HSTS, HTTP cache,<br/>service worker
+    B->>D: Resolve hostname
+    D-->>B: IP address
+    B->>S: TCP + TLS handshake (or QUIC)
+    B->>S: GET / HTTP request
+    S-->>B: 200 HTML (streamed)
+    Note over B: Parse HTML, build DOM
+    B->>S: Fetch CSS, JS, images
+    S-->>B: Subresources
+    Note over B: Style, layout, paint,<br/>composite

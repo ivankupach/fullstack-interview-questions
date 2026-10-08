@@ -1,0 +1,9 @@
+flowchart TD
+    R["Request for resource"] --> F{"Fresh in cache?"}
+    F -- "Yes, max-age not expired" --> U["Use cached copy, no network"]
+    F -- "No or no-cache" --> V{"Has ETag or Last-Modified?"}
+    V -- "No" --> N["Full fetch, 200"]
+    V -- "Yes" --> Q["Conditional request: If-None-Match"]
+    Q --> S{"Server says changed?"}
+    S -- "No" --> NM["304 Not Modified, reuse cache"]
+    S -- "Yes" --> N

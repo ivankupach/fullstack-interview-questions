@@ -1,0 +1,10 @@
+flowchart TB
+    subgraph CSR["CSR"]
+        A1["Empty HTML shell"] --> A2["Download JS bundle"] --> A3["Fetch data and render in browser"]
+    end
+    subgraph SSR["SSR"]
+        B1["Request hits server"] --> B2["Fetch data, render HTML"] --> B3["Browser paints, then hydrates"]
+    end
+    subgraph SSG["SSG"]
+        C1["Build time: render HTML"] --> C2["Serve static file from CDN"] --> C3["Browser paints, then hydrates"]
+    end

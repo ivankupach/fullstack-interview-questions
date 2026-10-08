@@ -1,0 +1,10 @@
+flowchart TB
+    subgraph R1["Stronger criteria"]
+        direction LR
+        A["Competing declarations<br/>for one property"] --> B["1. Origin and importance<br/>(!important flips order)"] --> C["2. Cascade layer order"]
+    end
+    subgraph R2["Tie-breakers"]
+        direction LR
+        D["3. Specificity"] --> E["4. Source order,<br/>last wins"] --> W["Winning value"]
+    end
+    R1 --> R2

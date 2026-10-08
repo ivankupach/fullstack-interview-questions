@@ -1,0 +1,10 @@
+flowchart TD
+    H["HTML bytes"] --> DOM["DOM tree"]
+    C["CSS bytes"] --> CSSOM["CSSOM"]
+    DOM --> RT["Render tree"]
+    CSSOM --> RT
+    JS["JavaScript"] -. "blocks parser" .-> DOM
+    CSSOM -. "blocks script execution" .-> JS
+    RT --> L["Layout"]
+    L --> P["Paint"]
+    P --> CO["Composite layers on GPU"]

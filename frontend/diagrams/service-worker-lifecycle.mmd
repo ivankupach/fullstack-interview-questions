@@ -1,0 +1,10 @@
+stateDiagram-v2
+    [*] --> Installing: register
+    Installing --> Installed: install event done
+    Installing --> Redundant: install failed
+    Installed --> Activating: no old worker in control or skipWaiting
+    Installed --> Waiting: old worker still controls pages
+    Waiting --> Activating: old tabs closed
+    Activating --> Activated: activate event done
+    Activated --> Redundant: replaced by newer version
+    Redundant --> [*]
