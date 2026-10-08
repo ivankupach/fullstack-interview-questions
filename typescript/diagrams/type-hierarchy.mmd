@@ -1,0 +1,18 @@
+flowchart TD
+    U["unknown (top type)"]
+    A["any (escape hatch)"]
+    O["object"]
+    P["string | number | boolean | ..."]
+    N["null / undefined"]
+    L["Literals: 'a', 42, true"]
+    OBJ["Object types, arrays, functions"]
+    NV["never (bottom type)"]
+    U --> O
+    U --> P
+    U --> N
+    O --> OBJ
+    P --> L
+    OBJ --> NV
+    L --> NV
+    N --> NV
+    A -. "assignable to and from everything except never" .-> U

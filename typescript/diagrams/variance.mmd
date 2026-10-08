@@ -1,0 +1,5 @@
+flowchart LR
+    D["Dog"] -- "is assignable to" --> AN["Animal"]
+    PD["Covariant: () => Dog"] -- "assignable to" --> PA["() => Animal"]
+    CA["Contravariant: (a: Animal) => void"] -- "assignable to" --> CD["(d: Dog) => void"]
+    IV["Invariant: both read and write, so neither direction is safe"]

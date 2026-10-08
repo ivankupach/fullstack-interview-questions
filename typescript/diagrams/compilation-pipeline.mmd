@@ -1,0 +1,16 @@
+flowchart TB
+    SRC["app.ts"]
+    subgraph TSC["tsc"]
+        direction LR
+        P["Parser: AST"] --> B["Binder: symbols and scopes"] --> CH["Checker: type analysis"]
+    end
+    subgraph Out["Outputs"]
+        direction LR
+        D["Diagnostics: errors"]
+        JS["app.js (types erased)"]
+        DTS["app.d.ts"]
+        MAP["app.js.map"]
+    end
+    SRC --> TSC
+    TSC -->|"Emitter"| Out
+    SRC -.->|"swc / esbuild / Babel: strip types only, no checking"| JS

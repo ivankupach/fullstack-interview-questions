@@ -1,0 +1,10 @@
+flowchart TD
+    S["value: string | number | Date | null"]
+    S --> C1{"value === null ?"}
+    C1 -- yes --> R1["null"]
+    C1 -- no --> C2{"typeof value === 'string' ?"}
+    C2 -- yes --> R2["string"]
+    C2 -- no --> C3{"value instanceof Date ?"}
+    C3 -- yes --> R3["Date"]
+    C3 -- no --> R4["number (what is left)"]
+    R4 --> E["Remaining type is never when all cases are handled"]
