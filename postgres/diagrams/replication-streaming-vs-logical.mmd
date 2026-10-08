@@ -1,0 +1,12 @@
+flowchart TB
+    subgraph Physical["Streaming (physical)"]
+        direction LR
+        P1[("Primary")] -->|"WAL bytes via slot"| S1[("Standby: read-only, identical")]
+    end
+    subgraph Logical["Logical"]
+        direction LR
+        P2[("Publisher")] -->|"decoded row changes via slot"| S2[("Subscriber: writable, any version")]
+    end
+    Physical ~~~ Logical
+    Note["Replication slot retains WAL until the consumer catches up"]
+    Logical ~~~ Note

@@ -1,0 +1,10 @@
+flowchart TB
+    U["UPDATE / DELETE leaves dead tuples"] --> T{"dead > threshold + scale_factor * rows?"}
+    T -->|"no"| W["wait"]
+    T -->|"yes"| AV["autovacuum worker starts"]
+    AV --> H["1. scan heap, collect dead TIDs"]
+    H --> IX["2. clean index entries"]
+    IX --> HP["3. mark heap space reusable (FSM)"]
+    HP --> FZ["4. freeze old tuples, advance relfrozenxid"]
+    FZ --> VM["5. update visibility map"]
+    BLK["Long transaction / stale slot"] -.->|"holds back xmin horizon"| H

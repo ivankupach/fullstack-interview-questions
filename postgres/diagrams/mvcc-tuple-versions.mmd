@@ -1,0 +1,7 @@
+flowchart LR
+    I["INSERT by xid 100"] --> V1["v1: xmin=100, xmax=0"]
+    V1 -->|"UPDATE by xid 105"| V1D["v1: xmin=100, xmax=105 (dead later)"]
+    V1D -->|"ctid points to"| V2["v2: xmin=105, xmax=0 (live)"]
+    S1["Snapshot taken before 105 commits"] -.->|"sees"| V1D
+    S2["Snapshot after 105 commits"] -.->|"sees"| V2
+    V1D -->|"no snapshot needs it"| VAC["VACUUM reclaims space"]

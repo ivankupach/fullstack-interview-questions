@@ -1,0 +1,17 @@
+flowchart TB
+    C1["Client A"] --> PM
+    C2["Client B"] --> PM
+    PM["postmaster"] -->|"fork per connection"| B1["backend 1"]
+    PM -->|"fork per connection"| B2["backend 2"]
+    PM --> BG["background processes"]
+    BG --> CK["checkpointer"]
+    BG --> BW["background writer"]
+    BG --> WW["WAL writer"]
+    BG --> AV["autovacuum launcher"]
+    B1 --> SB[("shared_buffers")]
+    B2 --> SB
+    CK --> SB
+    BW --> SB
+    SB --> DF[("data files")]
+    B1 --> WAL[("WAL")]
+    WW --> WAL

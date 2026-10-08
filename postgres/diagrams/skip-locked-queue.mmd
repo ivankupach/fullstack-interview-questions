@@ -1,0 +1,10 @@
+sequenceDiagram
+    participant W1 as Worker 1
+    participant W2 as Worker 2
+    participant Q as jobs table (pending)
+    W1->>Q: SELECT ... FOR UPDATE SKIP LOCKED LIMIT 1
+    Q-->>W1: row 1 (now locked)
+    W2->>Q: same query
+    Q-->>W2: row 2 (skips locked row 1)
+    Note over W1: process job
+    W1->>Q: UPDATE status = done, COMMIT

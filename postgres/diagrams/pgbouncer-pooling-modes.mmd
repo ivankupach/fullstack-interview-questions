@@ -1,0 +1,5 @@
+flowchart LR
+    A["1000 app clients"] --> PB["PgBouncer"]
+    PB -->|"session mode: server held per client connection"| PG[("Postgres: ~20-100 backends")]
+    PB -->|"transaction mode: server held per transaction"| PG
+    PB -->|"statement mode: server held per statement"| PG

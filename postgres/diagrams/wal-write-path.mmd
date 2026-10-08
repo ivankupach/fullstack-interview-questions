@@ -1,0 +1,10 @@
+flowchart LR
+    TX["Transaction: UPDATE"] --> BUF["Modify page in shared_buffers (dirty)"]
+    TX --> WB["WAL record to wal_buffers"]
+    COMMIT["COMMIT"] --> FS["fsync WAL to disk"]
+    WB --> FS
+    FS --> ACK["Ack to client"]
+    BUF -.->|"later, lazily"| CP["Checkpoint / bgwriter flush"]
+    CP --> DATA[("Data files")]
+    FS --> ARCH["Archiver / standbys"]
+    CRASH["Crash recovery"] -->|"replay WAL from last checkpoint"| DATA
