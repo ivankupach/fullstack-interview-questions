@@ -1,0 +1,13 @@
+flowchart TB
+    subgraph Naive["Naive resolvers: N+1"]
+        direction LR
+        Q1["posts query: 1 SQL"] --> P1["Post.author x N"]
+        P1 --> S1["N x SELECT user WHERE id=?"]
+    end
+    subgraph DL["With DataLoader"]
+        direction LR
+        Q2["posts query: 1 SQL"] --> P2["Post.author x N"]
+        P2 --> B2["loader.load(id) x N<br/>batched in one tick"]
+        B2 --> S2["1 x SELECT user<br/>WHERE id IN (...)"]
+    end
+    Naive ~~~ DL

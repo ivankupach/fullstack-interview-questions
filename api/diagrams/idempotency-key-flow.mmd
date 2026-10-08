@@ -1,0 +1,11 @@
+flowchart TD
+    A["POST /payments + Idempotency-Key"] --> B{"Key seen before?"}
+    B -- No --> C["Atomically insert key: in_progress"]
+    C --> D["Execute operation"]
+    D --> E["Store status + body + request hash"]
+    E --> F["Return 201"]
+    B -- Yes --> G{"Same request hash?"}
+    G -- No --> H["422 key reused with different payload"]
+    G -- Yes --> I{"State?"}
+    I -- in_progress --> J["409 retry later"]
+    I -- completed --> K["Replay stored response"]

@@ -1,0 +1,11 @@
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    C->>S: GET /docs/7
+    S-->>C: 200 body + ETag: v5
+    C->>S: GET /docs/7 + If-None-Match: v5
+    S-->>C: 304 Not Modified (no body)
+    C->>S: PUT /docs/7 + If-Match: v5
+    S-->>C: 200 + ETag: v6
+    C->>S: PUT /docs/7 + If-Match: v5 (stale)
+    S-->>C: 412 Precondition Failed

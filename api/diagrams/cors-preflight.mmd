@@ -1,0 +1,11 @@
+sequenceDiagram
+    participant B as Browser JS
+    participant A as api.example.com
+    Note over B,A: Origin: https://app.example.com
+    B->>A: OPTIONS /orders (preflight)
+    Note over B,A: Request-Method: PUT, Request-Headers: authorization
+    A-->>B: 204 + Allow-Origin, Allow-Methods, Allow-Headers, Max-Age
+    Note over B,A: Browser caches preflight for Max-Age
+    B->>A: PUT /orders (actual request)
+    A-->>B: 200 + Access-Control-Allow-Origin
+    Note over B,A: JS reads the response only if headers match

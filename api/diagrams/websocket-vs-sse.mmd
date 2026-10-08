@@ -1,0 +1,17 @@
+flowchart TB
+    subgraph WS["WebSocket"]
+        direction LR
+        W1["HTTP Upgrade: websocket"] --> W2["101 Switching Protocols"]
+        W2 --> W3["Full-duplex frames both ways"]
+    end
+    subgraph SSE["SSE"]
+        direction LR
+        S1["Client: GET text/event-stream"] --> S2["Server pushes events over one open response"]
+        S2 --> S3["Auto-reconnect with Last-Event-ID"]
+    end
+    subgraph LP["Long polling"]
+        direction LR
+        L1["Client: GET /events"] --> L2["Server holds until event or timeout"]
+        L2 --> L3["Respond, client re-requests"]
+    end
+    WS ~~~ SSE ~~~ LP

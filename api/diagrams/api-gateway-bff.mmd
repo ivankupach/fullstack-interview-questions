@@ -1,0 +1,12 @@
+flowchart TD
+    W["Web app"] --> GW["API Gateway: TLS, authN, rate limit, routing"]
+    M["Mobile app"] --> GW
+    P["Partner"] --> GW
+    GW --> BW["Web BFF"]
+    GW --> BM["Mobile BFF"]
+    GW --> PA["Public API"]
+    BW --> U["Users service"]
+    BW --> O["Orders service"]
+    BM --> U
+    BM --> O
+    PA --> O

@@ -1,0 +1,14 @@
+flowchart LR
+    subgraph S1["Page 1"]
+        direction TB
+        A["GET /orders?limit=2"] --> B["ORDER BY created_at DESC, id DESC<br/>LIMIT 3"]
+        B --> C["3 rows: more pages exist<br/>return first 2"]
+        C --> E["Encode last row<br/>(created_at, id) as next_cursor"]
+    end
+    subgraph S2["Page 2"]
+        direction TB
+        F["GET /orders?limit=2&cursor=abc"] --> G["Decode cursor"]
+        G --> H["WHERE (created_at, id) < (c, i)<br/>ORDER BY ... LIMIT 3"]
+        H --> I["Index seek: no OFFSET scan"]
+    end
+    S1 --> S2

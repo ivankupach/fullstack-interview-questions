@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant C as Client
+    participant API as API
+    participant W as Worker
+    C->>API: POST /reports
+    API->>W: Enqueue job
+    API-->>C: 202 Accepted + Location: /operations/42
+    Note right of W: Process job
+    C->>API: GET /operations/42
+    API-->>C: 200 status: running + Retry-After: 5
+    W->>API: Mark done
+    C->>API: GET /operations/42
+    API-->>C: 303 See Other + Location: /reports/9
+    C->>API: GET /reports/9
+    API-->>C: 200 report

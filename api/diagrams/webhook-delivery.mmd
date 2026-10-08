@@ -1,0 +1,10 @@
+sequenceDiagram
+    participant P as Provider
+    participant Q as Queue
+    participant R as Receiver endpoint
+    P->>Q: Event created
+    Q->>R: POST /hook + X-Signature + event id
+    Note right of R: Verify HMAC + timestamp<br/>Dedupe by event id
+    R-->>Q: 2xx fast, process async
+    Q->>R: Retry with backoff on non-2xx or timeout
+    Note over Q: After N failures: dead-letter and disable endpoint
