@@ -1,0 +1,15 @@
+flowchart TB
+    subgraph CI["Build and verify"]
+        direction LR
+        PR["Push / PR"] --> L["Lint + typecheck"] --> T["Unit + integration tests"] --> B["Build image"]
+    end
+    subgraph STG["Ship to staging"]
+        direction LR
+        S["Scan: SAST, deps, image"] --> R[("Registry")] --> D1["Deploy staging"] --> E["E2E + smoke"]
+    end
+    subgraph PROD["Release"]
+        direction LR
+        A{"Approval / checks"} -->|"yes"| D2["Deploy production"] --> V["Verify + monitor"] -->|"SLO breach"| RB["Rollback"]
+    end
+    CI --> STG
+    STG --> PROD

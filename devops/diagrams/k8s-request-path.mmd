@@ -1,0 +1,14 @@
+flowchart TB
+    subgraph EDGE["Edge"]
+        direction LR
+        C["Client"] --> DNS["DNS"] --> LB["Cloud load balancer"] --> ING["Ingress / Gateway controller"]
+    end
+    subgraph CL["In cluster"]
+        direction LR
+        SVC["Service ClusterIP"]
+        SVC -->|"kube-proxy / eBPF"| P1["Pod A"]
+        SVC --> P2["Pod B"]
+        SVC --> P3["Pod C"]
+        RDY["Readiness probe"] -.->|"only Ready pods in Endpoints"| SVC
+    end
+    EDGE -->|"host + path rule"| CL

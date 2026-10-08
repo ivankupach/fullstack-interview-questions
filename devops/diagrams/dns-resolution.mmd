@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant App as App / browser
+    participant Stub as Stub resolver (OS cache)
+    participant Rec as Recursive resolver
+    participant Root as Root server
+    participant TLD as .com TLD server
+    participant Auth as Authoritative NS
+    App->>Stub: api.example.com?
+    Stub->>Rec: cache miss, ask resolver
+    Rec->>Root: api.example.com?
+    Root-->>Rec: NS for .com
+    Rec->>TLD: api.example.com?
+    TLD-->>Rec: NS for example.com
+    Rec->>Auth: api.example.com?
+    Auth-->>Rec: A 203.0.113.10, TTL 300
+    Rec-->>Stub: A 203.0.113.10 (cached for TTL)
+    Stub-->>App: 203.0.113.10

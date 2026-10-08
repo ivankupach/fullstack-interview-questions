@@ -1,0 +1,15 @@
+flowchart TB
+    subgraph bg ["Blue-green: atomic switch"]
+        direction LR
+        U1["Users"] --> R1{"Router"}
+        R1 -->|"100% now"| BL["Blue v1"]
+        R1 -.->|"flip after checks"| GR["Green v2"]
+    end
+    subgraph cn ["Canary: gradual shift"]
+        direction LR
+        U2["Users"] --> R2{"Weighted routing"}
+        R2 -->|"95%"| V1["Stable v1"]
+        R2 -->|"5% then 25, 50, 100"| V2["Canary v2"]
+        V2 --> M["Metrics gate"]
+    end
+    cn ~~~ bg

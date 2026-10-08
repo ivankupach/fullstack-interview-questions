@@ -1,0 +1,19 @@
+flowchart TB
+    U["kubectl / CI"] --> API
+    subgraph cp ["Control plane"]
+        API["kube-apiserver"]
+        ETCD[("etcd")]
+        SCH["scheduler"]
+        CM["controller-manager"]
+        API <--> ETCD
+        SCH --> API
+        CM --> API
+    end
+    subgraph n1 ["Worker node"]
+        KL["kubelet"]
+        KP["kube-proxy"]
+        CR["container runtime"]
+        POD["Pods"]
+        KL --> CR --> POD
+    end
+    API --> KL

@@ -1,0 +1,20 @@
+flowchart TB
+    subgraph deps ["Stage 1: deps"]
+        direction LR
+        D1["node:24-alpine"] --> D2["npm ci"]
+    end
+    subgraph build ["Stage 2: build"]
+        direction LR
+        B1["Copy source"] --> B2["npm run build"]
+    end
+    subgraph prod ["Stage 3: prod-deps"]
+        P1["npm ci --omit=dev"]
+    end
+    subgraph run ["Stage 4: runtime"]
+        direction LR
+        R1["distroless nonroot"] --> R2["Copy dist + prod node_modules"]
+    end
+    deps --> build
+    build -->|"dist/"| run
+    prod -->|"node_modules"| run
+    R2 --> IMG["Final image ~150 MB"]

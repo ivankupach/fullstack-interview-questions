@@ -1,0 +1,13 @@
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    C->>S: TCP SYN
+    S-->>C: SYN-ACK
+    C->>S: ACK
+    C->>S: ClientHello: versions, ciphers, key share, SNI
+    S-->>C: ServerHello + key share
+    S-->>C: Certificate, CertificateVerify, Finished (encrypted)
+    Note over C: Verify chain, hostname, expiry
+    C->>S: Finished (encrypted)
+    C->>S: HTTP request over TLS 1.3
+    S-->>C: HTTP response

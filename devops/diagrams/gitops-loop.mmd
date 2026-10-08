@@ -1,0 +1,12 @@
+flowchart TB
+    subgraph CIP["Build"]
+        direction LR
+        DEV["Developer"] -->|"PR + merge"| APP["App repo"] --> CI["CI: test, build, push image"]
+    end
+    subgraph CD["Deploy"]
+        direction LR
+        CFG["Config repo (Git)"] -->|"pull / watch"| ARGO["Argo CD"]
+        ARGO -->|"compare + sync, self-heal"| K8S["Cluster"]
+        K8S -.->|"live state"| ARGO
+    end
+    CIP -->|"CI bumps image tag"| CD

@@ -1,0 +1,15 @@
+flowchart TB
+    subgraph app ["Services with OTel SDK"]
+        A1["API"]
+        A2["Worker"]
+    end
+    A1 -->|"OTLP"| COL["OTel Collector"]
+    A2 -->|"OTLP"| COL
+    COL -->|"traces"| TR["Tempo / Jaeger"]
+    COL -->|"logs"| LG["Loki"]
+    COL -->|"metrics"| PR["Prometheus"]
+    PR --> AM["Alertmanager"]
+    AM --> PD["Pager / Slack"]
+    TR --> G["Grafana"]
+    LG --> G
+    PR --> G

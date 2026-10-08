@@ -1,0 +1,14 @@
+flowchart LR
+    subgraph good ["Good order: edit src/app.ts keeps npm ci cached"]
+        direction TB
+        G1["FROM node:24-alpine (cached)"] --> G2["COPY package*.json (cached)"]
+        G2 --> G3["RUN npm ci (cached)"]
+        G3 --> G4["COPY . . (rebuilt)"]
+        G4 --> G5["RUN npm run build (rebuilt)"]
+    end
+    subgraph bad ["Bad order: edit src/app.ts reinstalls everything"]
+        direction TB
+        B1["FROM node:24-alpine (cached)"] --> B2["COPY . . (rebuilt)"]
+        B2 --> B3["RUN npm ci (rebuilt, slow)"]
+        B3 --> B4["RUN npm run build (rebuilt)"]
+    end
