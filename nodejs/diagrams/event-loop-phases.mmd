@@ -1,0 +1,7 @@
+flowchart TB
+    T["timers"] --> P["pending callbacks"]
+    P --> I["idle, prepare"]
+    I --> PO["poll (I/O)"]
+    PO --> C["check (setImmediate)"]
+    C --> CL["close callbacks"]
+    CL -.->|"next iteration"| T

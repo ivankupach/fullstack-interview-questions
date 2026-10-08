@@ -1,0 +1,8 @@
+flowchart TD
+    JS["Your JS code + node: modules"] --> B["C++ bindings"]
+    B --> V8["V8: JIT, heap, GC"]
+    B --> UV["libuv: event loop"]
+    UV --> OS["OS async APIs: epoll, kqueue, IOCP"]
+    UV --> TP["Thread pool: 4 threads by default"]
+    TP --> FS["fs, dns.lookup, crypto, zlib"]
+    OS --> NET["Sockets, pipes, timers"]

@@ -1,0 +1,6 @@
+flowchart TD
+    A["Run sync code to completion"] --> B["process.nextTick queue (drain fully)"]
+    B --> C["Promise microtask queue (drain fully)"]
+    C --> D{"Any new nextTick?"}
+    D -->|yes| B
+    D -->|no| E["Next event loop phase / callback"]

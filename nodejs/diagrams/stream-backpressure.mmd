@@ -1,0 +1,10 @@
+sequenceDiagram
+    participant R as Readable
+    participant W as Writable
+    R->>W: write(chunk)
+    W-->>R: false (buffer above highWaterMark)
+    Note over R: pause()
+    Note over W: flush buffer to destination
+    W-->>R: emit 'drain'
+    Note over R: resume()
+    R->>W: write(chunk)

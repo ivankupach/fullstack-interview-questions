@@ -1,0 +1,12 @@
+flowchart TB
+    subgraph Process["One Node process"]
+        MT["Main thread: V8 isolate + loop"]
+        W1["Worker 1: own isolate + loop"]
+        W2["Worker 2: own isolate + loop"]
+        SAB[("SharedArrayBuffer")]
+    end
+    MT <-->|"postMessage (structured clone)"| W1
+    MT <-->|"postMessage"| W2
+    W1 --- SAB
+    W2 --- SAB
+    MT --- SAB

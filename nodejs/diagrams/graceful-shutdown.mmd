@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant K as Orchestrator
+    participant N as Node app
+    participant LB as Load balancer
+    participant D as DB and queues
+    K->>N: SIGTERM
+    N->>LB: readiness fails, no new traffic
+    Note over N: server.close(), closeIdleConnections()
+    Note over N: wait for in-flight requests
+    N->>D: close pools, flush logs
+    N->>K: exit(0)
+    K->>N: SIGKILL if grace period expires

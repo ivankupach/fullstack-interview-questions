@@ -1,0 +1,5 @@
+flowchart TD
+    C["Clients"] --> PR["Primary: owns port 3000, forks workers"]
+    PR -->|"round-robin"| W1["Worker 1: own V8 + loop"]
+    PR -->|"round-robin"| W2["Worker 2: own V8 + loop"]
+    PR -->|"round-robin"| W3["Worker 3: own V8 + loop"]
