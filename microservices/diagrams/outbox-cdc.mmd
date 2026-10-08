@@ -1,0 +1,7 @@
+flowchart TB
+  API["Order service"] -->|"1. one local TX"| DB[("Orders DB<br/>orders + outbox tables")]
+  DB -->|"2. WAL / binlog"| DBZ["Debezium connector"]
+  DBZ -->|"3. publish"| K{{"Kafka topic"}}
+  K --> C1["Payment svc"]
+  K --> C2["Notification svc"]
+  C1 --> IB[("inbox / processed_events")]

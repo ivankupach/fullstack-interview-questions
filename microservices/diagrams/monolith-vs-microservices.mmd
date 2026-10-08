@@ -1,0 +1,22 @@
+flowchart LR
+  subgraph M["Monolith"]
+    direction TB
+    MUI["UI / API"] --> MO["Orders module"]
+    MUI --> MP["Payments module"]
+    MUI --> MI["Inventory module"]
+    MO --> MDB[("One shared DB")]
+    MP --> MDB
+    MI --> MDB
+  end
+  subgraph S["Microservices"]
+    direction TB
+    GW["API gateway"] --> SO["Orders svc"]
+    GW --> SP["Payments svc"]
+    GW --> SI["Inventory svc"]
+    SO --> ODB[("Orders DB")]
+    SP --> PDB[("Payments DB")]
+    SI --> IDB[("Inventory DB")]
+    SO -. "events" .-> BUS{{"Message broker"}}
+    BUS -.-> SP
+    BUS -.-> SI
+  end

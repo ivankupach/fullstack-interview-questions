@@ -1,0 +1,9 @@
+stateDiagram-v2
+  [*] --> Closed
+  Closed --> Open: failures >= threshold
+  Open --> HalfOpen: reset timeout elapsed
+  HalfOpen --> Closed: probe calls succeed
+  HalfOpen --> Open: a probe fails
+  Closed: Closed - calls flow
+  Open: Open - fail fast
+  HalfOpen: Half-open - limited probes

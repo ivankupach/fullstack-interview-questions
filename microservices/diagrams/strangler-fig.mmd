@@ -1,0 +1,7 @@
+flowchart TB
+  C["Clients"] --> F["Facade / proxy"]
+  F -->|"/legacy routes"| L["Legacy monolith"]
+  F -->|"/billing routes"| N["New billing svc"]
+  L --> LDB[("Legacy DB")]
+  N --> NDB[("Billing DB")]
+  LDB -. "sync / CDC" .-> NDB

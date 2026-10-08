@@ -1,0 +1,17 @@
+sequenceDiagram
+  participant S as Saga orchestrator
+  participant O as Order svc
+  participant P as Payment svc
+  participant I as Inventory svc
+  S->>O: createOrder (PENDING)
+  O-->>S: ok
+  S->>P: chargePayment
+  P-->>S: ok
+  S->>I: reserveStock
+  I--xS: failed (out of stock)
+  Note over S: Start compensation (reverse order)
+  S->>P: refundPayment
+  P-->>S: refunded
+  S->>O: cancelOrder
+  O-->>S: cancelled
+  Note over S: Saga state = COMPENSATED

@@ -1,0 +1,9 @@
+flowchart TB
+  W["Web app"] --> BW["Web BFF"]
+  M["Mobile app"] --> BM["Mobile BFF"]
+  P["Partner API client"] --> GW["Public API gateway<br/>authN, rate limit, routing"]
+  BW --> GW
+  BM --> GW
+  GW --> U["User svc"]
+  GW --> O["Orders svc"]
+  GW --> C["Catalog svc"]

@@ -1,0 +1,8 @@
+flowchart TB
+  U["Client"] -->|"Command"| CH["Command handler"]
+  CH --> WM[("Write model DB")]
+  WM -->|"Domain events"| EB{{"Event bus"}}
+  EB --> PR["Projector"]
+  PR --> RM[("Read model: search / cache")]
+  U -->|"Query"| QH["Query handler"]
+  QH --> RM

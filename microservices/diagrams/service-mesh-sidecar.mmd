@@ -1,0 +1,11 @@
+flowchart TB
+  CP["Control plane<br/>(istiod / Linkerd)"]
+  subgraph PA["Pod A"]
+    A["Orders app"] --> SA["Sidecar proxy"]
+  end
+  subgraph PB["Pod B"]
+    SB["Sidecar proxy"] --> B["Payments app"]
+  end
+  CP -. "certs + routing config" .-> PA
+  CP -. "certs + routing config" .-> PB
+  PA == "mTLS" ==> PB

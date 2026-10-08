@@ -1,0 +1,20 @@
+sequenceDiagram
+  participant O as Order svc
+  participant B as Event bus
+  participant P as Payment svc
+  participant I as Inventory svc
+  O->>B: OrderCreated
+  B->>P: OrderCreated
+  P->>B: PaymentCompleted
+  B->>I: PaymentCompleted
+  I->>B: StockReserved
+  B->>O: StockReserved
+  Note over O: Order CONFIRMED
+  rect rgb(255,235,235)
+    Note over I,O: Failure path
+    I->>B: StockReservationFailed
+    B->>P: StockReservationFailed
+    P->>B: PaymentRefunded
+    B->>O: PaymentRefunded
+    Note over O: Order CANCELLED
+  end

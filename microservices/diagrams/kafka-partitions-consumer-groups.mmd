@@ -1,0 +1,20 @@
+flowchart LR
+  PR["Producer<br/>key = orderId"] --> P0
+  PR --> P1
+  PR --> P2
+  subgraph T["Topic: orders (3 partitions)"]
+    P0["Partition 0"]
+    P1["Partition 1"]
+    P2["Partition 2"]
+  end
+  subgraph GA["Group A: payments"]
+    A1["Consumer A1"]
+    A2["Consumer A2"]
+  end
+  subgraph GB["Group B: analytics"]
+    B1["Consumer B1"]
+  end
+  P0 --> A1
+  P1 --> A1
+  P2 --> A2
+  T -.->|"all 3, own offsets"| B1
