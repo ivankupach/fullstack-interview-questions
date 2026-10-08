@@ -1,0 +1,16 @@
+sequenceDiagram
+    participant U as User
+    participant C as Client app
+    participant A as Authorization server
+    participant R as Resource API
+    Note over C: Generate code_verifier,<br/>code_challenge = S256(verifier)
+    C->>A: GET /authorize?response_type=code&code_challenge&state
+    A->>U: Login and consent
+    U->>A: Approve
+    A-->>C: Redirect with code and state
+    Note over C: Check state matches
+    C->>A: POST /token (code, code_verifier)
+    Note over A: Verify S256(verifier) == challenge
+    A-->>C: access_token, id_token, refresh_token
+    C->>R: GET /api (Bearer access_token)
+    R-->>C: Protected data

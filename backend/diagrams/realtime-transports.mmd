@@ -1,0 +1,13 @@
+flowchart LR
+    subgraph POLL["Short polling"]
+        P1["Client: GET"] --> P2["Server: reply now"]
+    end
+    subgraph LONG["Long polling"]
+        L1["Client: GET"] --> L2["Server holds until event or timeout"]
+    end
+    subgraph SSE["SSE"]
+        S1["Client: one GET"] --> S2["Server streams events down"]
+    end
+    subgraph WS["WebSocket"]
+        W1["Client: Upgrade"] <-->|"frames both ways"| W2["Server: full duplex"]
+    end

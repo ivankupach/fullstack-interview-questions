@@ -1,0 +1,8 @@
+flowchart TB
+    API["API handler"] -->|"one transaction"| DB[("DB: orders + outbox")]
+    DB --> RELAY["Relay: poll or CDC"]
+    RELAY -->|"mark sent"| DB
+    RELAY -->|"publish, at-least-once"| BROKER["Message broker"]
+    BROKER --> C1["Consumer A"]
+    BROKER --> C2["Consumer B"]
+    C1 --> DEDUP[("processed_events")]

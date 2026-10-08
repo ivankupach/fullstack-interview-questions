@@ -1,0 +1,11 @@
+sequenceDiagram
+    participant K as Orchestrator
+    participant LB as Load balancer
+    participant S as Service
+    K->>S: SIGTERM
+    Note over S: /readyz now returns 503
+    Note over LB: Remove instance from pool
+    Note over S: Stop accepting, drain in-flight<br/>requests
+    Note over S: Close DB pool, flush logs<br/>and queues
+    S-->>K: Exit 0
+    Note over K,S: SIGKILL after terminationGracePeriod if still running

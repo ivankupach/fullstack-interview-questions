@@ -1,0 +1,14 @@
+sequenceDiagram
+    participant C as Client
+    participant API as Resource API
+    participant A as Auth server
+    participant DB as Token store
+    C->>API: Request with access token (expired)
+    API-->>C: 401 Unauthorized
+    C->>A: POST /token (refresh_token R1)
+    A->>DB: Look up R1, mark used
+    A->>DB: Store R2 in same family
+    A-->>C: New access token + R2
+    C->>API: Retry with new access token
+    API-->>C: 200 OK
+    Note over A,DB: Reuse of R1 revokes the whole family

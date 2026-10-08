@@ -1,0 +1,14 @@
+sequenceDiagram
+    participant App as Application
+    participant Cache as Redis
+    participant DB as Database
+    App->>Cache: GET user:42
+    alt Cache hit
+        Cache-->>App: value
+    else Cache miss
+        Cache-->>App: nil
+        App->>DB: SELECT user 42
+        DB-->>App: row
+        App->>Cache: SET user:42 EX 300
+    end
+    Note over App,DB: On write: update DB, then DEL user:42

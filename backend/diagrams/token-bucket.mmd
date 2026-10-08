@@ -1,0 +1,7 @@
+flowchart TD
+    S(["Request arrives"]) --> R["Refill: tokens += elapsed x rate, capped at capacity"]
+    R --> Q{"tokens >= cost?"}
+    Q -->|"yes"| T["tokens -= cost"]
+    T --> OK(["Allow"])
+    Q -->|"no"| W["Compute Retry-After"]
+    W --> NO(["Reject: 429"])

@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant P as Provider
+    participant Q as Delivery queue
+    participant E as Customer endpoint
+    P->>Q: Enqueue event (id, payload)
+    Q->>E: POST (signed, timestamp)
+    alt 2xx within timeout
+        E-->>Q: 200 OK
+        Q->>P: Mark delivered
+    else error or timeout
+        E-->>Q: 500 or no reply
+        Note over Q: Retry with backoff + jitter
+        Q->>E: POST (same event id)
+    end
+    Note over Q,E: After max attempts: dead-letter and alert

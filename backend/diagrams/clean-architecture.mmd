@@ -1,0 +1,18 @@
+flowchart LR
+    subgraph OUT["Infrastructure (outer)"]
+        HTTP["HTTP controller"]
+        PG["Postgres repository"]
+        MAIL["SMTP mailer"]
+    end
+    subgraph APP["Application"]
+        UC["Use case: PlaceOrder"]
+        PORT["Ports: OrderRepo, Mailer<br/>(implemented by infra)"]
+    end
+    subgraph DOM["Domain (inner)"]
+        ENT["Entities and rules"]
+    end
+    HTTP --> UC
+    PG -.-> PORT
+    MAIL -.-> PORT
+    UC --> PORT
+    UC --> ENT
