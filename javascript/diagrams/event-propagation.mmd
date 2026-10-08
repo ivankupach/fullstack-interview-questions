@@ -1,0 +1,10 @@
+flowchart TB
+    subgraph CAP["1. Capture phase (down)"]
+        direction LR
+        W["window"] --> D["document"] --> UL["ul#list"] --> LI["li (event.target)"]
+    end
+    subgraph BUB["2. Bubble phase (up)"]
+        direction LR
+        UL2["ul#list"] --> D2["document"] --> W2["window"]
+    end
+    CAP -->|"target reached"| BUB

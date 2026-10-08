@@ -1,0 +1,12 @@
+stateDiagram-v2
+    direction LR
+    [*] --> Pending
+    Pending --> Fulfilled: resolve value
+    Pending --> Rejected: reject or throw
+    Fulfilled --> [*]
+    Rejected --> [*]
+    note right of Pending
+        Settled means fulfilled or rejected.
+        A settled promise never changes again.
+        Handlers run as microtasks.
+    end note

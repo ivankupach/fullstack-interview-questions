@@ -1,0 +1,6 @@
+flowchart LR
+    A["Run one macrotask<br/>(script, timer, click)"] --> C["Drain ALL microtasks<br/>(promise reactions,<br/>queueMicrotask)"]
+    C --> E["Render if needed<br/>(rAF, layout, paint)"]
+    E --> F["Pick NEXT macrotask<br/>from the queue"]
+    F --> A
+    C -. "new microtask queued?<br/>keep draining" .-> C

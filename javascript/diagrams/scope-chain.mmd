@@ -1,0 +1,5 @@
+flowchart TB
+    I["inner() scope<br/>z = 3"] --> O["outer() scope<br/>y = 2"]
+    O --> M["Module / script scope<br/>x = 1"]
+    M --> G["Global scope<br/>globalThis, window"]
+    G -- "not found" --> E["ReferenceError"]

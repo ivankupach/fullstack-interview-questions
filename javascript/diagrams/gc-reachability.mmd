@@ -1,0 +1,10 @@
+flowchart LR
+    R["GC roots<br/>(global, stack, active closures)"] --> A["config object"]
+    R --> B["cache Map"]
+    B --> C["user object"]
+    A --> D["handlers array"]
+    D --> F["closure holding bigBuffer"]
+    X["old DOM node<br/>(detached)"] --> Y["listener closure"]
+    Y --> X
+    style X fill:#fdd,stroke:#c33
+    style Y fill:#fdd,stroke:#c33

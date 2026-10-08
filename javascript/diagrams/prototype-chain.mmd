@@ -1,0 +1,7 @@
+flowchart TB
+    rex["rex<br/>{ name: 'Rex' }"] -- "[[Prototype]]" --> DP["Dog.prototype<br/>{ bark() }"]
+    DP -- "[[Prototype]]" --> AP["Animal.prototype<br/>{ eat() }"]
+    AP -- "[[Prototype]]" --> OP["Object.prototype<br/>{ toString(), hasOwnProperty() }"]
+    OP -- "[[Prototype]]" --> N["null"]
+    DC["Dog (constructor)"] -- ".prototype" --> DP
+    DP -- ".constructor" --> DC

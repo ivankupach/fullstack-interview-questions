@@ -1,0 +1,10 @@
+flowchart TD
+    A["How is the function called?"] --> B{"Arrow function?"}
+    B -- "yes" --> R1["this = enclosing lexical this"]
+    B -- "no" --> C{"Called with new?"}
+    C -- "yes" --> R2["this = newly created object"]
+    C -- "no" --> D{"call / apply / bind?"}
+    D -- "yes" --> R3["this = the explicit argument"]
+    D -- "no" --> E{"Called as obj.method()?"}
+    E -- "yes" --> R4["this = obj"]
+    E -- "no" --> R5["Default: undefined in strict mode,<br/>globalThis in sloppy mode"]
