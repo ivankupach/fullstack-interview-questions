@@ -1,0 +1,8 @@
+flowchart LR
+  E["Entry file"] --> RS["Resolve: platform extensions, exports"]
+  RS --> T["Transform: Babel, TypeScript, JSX"]
+  T --> G["Dependency graph"]
+  G --> S["Serialize: one bundle, inline requires"]
+  S -->|"dev"| DEV["Serve over HTTP + Fast Refresh"]
+  S -->|"release"| H["hermesc compiles to bytecode (.hbc)"]
+  H --> APP["Embedded in app binary"]

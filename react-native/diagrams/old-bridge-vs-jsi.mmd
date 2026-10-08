@@ -1,0 +1,10 @@
+flowchart LR
+  subgraph Old["Old architecture (bridge)"]
+    direction LR
+    OJ["JS thread"] <-->|"async JSON messages, batched"| OB["Bridge queue"] <--> ON["Native modules + UI"]
+  end
+  subgraph New["New architecture (JSI)"]
+    direction LR
+    NJ["JS (Hermes)"] <-->|"direct C++ references, sync or async"| JSI["JSI"] <--> NN["TurboModules + Fabric (C++ core)"]
+  end
+  Old ~~~ New

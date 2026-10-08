@@ -1,0 +1,12 @@
+sequenceDiagram
+  participant U as User taps link
+  participant OS as iOS / Android
+  participant W as Your web server
+  participant A as App
+  U->>OS: https://example.com/orders/42
+  OS->>W: Fetch apple-app-site-association / assetlinks.json
+  W-->>OS: App ID is allowed for this domain
+  OS->>A: Open app with URL
+  Note over A: Cold start: getInitialURL. Warm: url event
+  A->>A: Match linking config / Expo Router path
+  A->>A: Navigate to /orders/[id] with id = 42

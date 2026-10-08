@@ -1,0 +1,10 @@
+flowchart TB
+  JS["JS thread: React render, app logic, Hermes"]
+  BG["Background threads: native module work, layout, I/O"]
+  UI["UI thread: mount views, touch events, native animations"]
+  WK["UI worklet runtime: Reanimated and Gesture Handler"]
+  JS -->|"commit shadow tree"| BG
+  BG -->|"mount mutations"| UI
+  UI -->|"events"| JS
+  JS -->|"schedule worklet / shared value"| WK
+  WK -->|"update props directly"| UI

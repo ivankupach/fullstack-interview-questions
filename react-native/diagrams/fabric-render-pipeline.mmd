@@ -1,0 +1,6 @@
+flowchart LR
+  R["Render: React creates shadow tree (C++)"] --> L["Commit: Yoga computes layout"]
+  L --> P["Promote tree as next"]
+  P --> D["Mount: diff old vs new tree"]
+  D --> M["UI thread applies create / update / delete"]
+  M --> V["Native views on screen"]

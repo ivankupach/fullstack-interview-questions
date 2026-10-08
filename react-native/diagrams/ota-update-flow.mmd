@@ -1,0 +1,11 @@
+sequenceDiagram
+  participant D as Developer
+  participant E as EAS Update
+  participant A as App on device
+  D->>E: eas update --channel production
+  Note over E: Bundle + assets, runtimeVersion, branch
+  A->>E: Launch: check for update (channel + runtimeVersion)
+  E-->>A: Manifest of newest compatible update
+  A->>E: Download missing assets
+  Note over A: Stored, applied on next launch
+  A->>A: Launch new bundle, or fall back to embedded one on failure

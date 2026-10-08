@@ -1,0 +1,13 @@
+sequenceDiagram
+  participant UI as UI
+  participant DB as Local DB
+  participant Q as Outbox queue
+  participant S as Server
+  UI->>DB: Write change (optimistic)
+  DB-->>UI: Updated immediately
+  DB->>Q: Enqueue mutation with idempotency key
+  Note over Q: Offline: wait for network
+  Q->>S: Push when online, retry with backoff
+  S-->>Q: Ack or conflict
+  S-->>DB: Pull changes since last cursor
+  DB-->>UI: Live query refreshes

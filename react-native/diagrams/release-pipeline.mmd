@@ -1,0 +1,9 @@
+flowchart TB
+  PR["Pull request"] --> CHK["tsc, eslint, jest, expo-doctor"]
+  CHK --> FP{"Native fingerprint changed?"}
+  FP -->|"no"| UPD["eas update to preview channel"]
+  FP -->|"yes"| BLD["eas build: iOS + Android"]
+  BLD --> TF["Internal testing: TestFlight, Play internal track"]
+  TF --> SUB["eas submit to stores"]
+  SUB --> REL["Phased release"]
+  UPD --> PROD["Promote update to production channel"]
