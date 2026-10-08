@@ -1,0 +1,7 @@
+flowchart LR
+    S["Spoofing"] --> S1["Authentication"]
+    T["Tampering"] --> T1["Integrity: signatures, HMAC"]
+    R["Repudiation"] --> R1["Audit logs"]
+    I["Information disclosure"] --> I1["Encryption, access control"]
+    D["Denial of service"] --> D1["Rate limits, quotas"]
+    E["Elevation of privilege"] --> E1["Authorization, least privilege"]

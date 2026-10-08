@@ -1,0 +1,10 @@
+flowchart TB
+    subgraph R1["Outer layers"]
+        direction LR
+        A["Edge: WAF, DDoS,<br/>rate limits, TLS"] --> B["App: input validation,<br/>authn, authz"] --> C["Output: encoding,<br/>CSP, headers"]
+    end
+    subgraph R2["Inner layers"]
+        direction LR
+        D["Data: parameterized<br/>queries, RLS, encryption"] --> E["Infra: least privilege,<br/>segmentation, secrets manager"] --> F["Detect: logging, alerting,<br/>incident response"]
+    end
+    R1 --> R2

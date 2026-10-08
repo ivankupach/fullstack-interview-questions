@@ -1,0 +1,8 @@
+flowchart TB
+    A["Attacker"] -->|"1. plants input"| B["Server / DB"]
+    B -->|"2. page with untrusted data"| C{"Output encoded?"}
+    C -->|"Yes"| E["Browser shows data as text"]
+    C -->|"No"| D["Browser parses data as HTML/JS"]
+    H["CSP"] -.->|"blocks inline script"| D
+    D --> F["Script runs in victim origin"]
+    F --> G["Steals data / acts as user"]

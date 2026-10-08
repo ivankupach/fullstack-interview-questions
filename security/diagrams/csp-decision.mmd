@@ -1,0 +1,8 @@
+flowchart TD
+    A["Browser meets script"] --> B{"Inline or external?"}
+    B -->|"Inline"| C{"Valid nonce or hash?"}
+    B -->|"External"| D{"Source allowed?<br/>(host in script-src, or nonced parent + strict-dynamic)"}
+    C -->|"Yes"| OK["Execute"]
+    D -->|"Yes"| OK
+    C -->|"No"| X["Block + report-to endpoint"]
+    D -->|"No"| X

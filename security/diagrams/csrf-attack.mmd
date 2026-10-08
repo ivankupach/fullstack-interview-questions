@@ -1,0 +1,13 @@
+sequenceDiagram
+    participant V as Victim browser
+    participant B as bank.com
+    participant E as evil.com
+    V->>B: Log in, receives session cookie
+    V->>E: Visits malicious page
+    E-->>V: Hidden form targeting bank.com
+    V->>B: POST /transfer plus cookie (auto-attached)
+    alt No defense
+        B-->>V: Transfer executed
+    else CSRF token or SameSite cookie
+        B-->>V: 403 rejected
+    end

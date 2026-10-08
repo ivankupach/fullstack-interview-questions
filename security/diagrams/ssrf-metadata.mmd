@@ -1,0 +1,16 @@
+sequenceDiagram
+    participant A as Attacker
+    participant App as App: fetch URL feature
+    participant V as Egress validation
+    participant M as Cloud metadata service
+    A->>App: url=http://169.254.169.254/...
+    App->>V: check target
+    alt Allowlist + IP check
+        V-->>App: blocked
+        App-->>A: Request blocked
+    else No validation
+        V->>M: request passes through
+        M-->>App: IAM credentials
+        App-->>A: returns body with credentials
+    end
+    Note over M: IMDSv2 / network policy<br/>is a second layer

@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant U as User browser
+    participant A as Client app
+    participant AS as Auth server
+    Note over A: Create code_verifier,<br/>code_challenge = S256(verifier), state
+    A->>AS: Redirect: client_id, redirect_uri, challenge, state
+    AS->>U: Login and consent
+    AS->>A: Redirect back with code and state
+    Note over A: Check state matches
+    A->>AS: POST code and code_verifier
+    Note over AS: Verify S256(verifier)<br/>equals challenge
+    AS-->>A: Access token (and ID token)

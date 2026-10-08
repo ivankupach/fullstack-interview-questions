@@ -1,0 +1,10 @@
+flowchart LR
+    subgraph Checks["Validate in order"]
+        direction TB
+        A["1. alg in allowlist"] --> B["2. Signature valid"]
+        B --> C["3. iss and aud match"]
+        C --> D["4. exp and nbf valid"]
+        D --> E["5. Not revoked"]
+    end
+    Checks -->|"all pass"| OK["Accept"]
+    Checks -.->|"any check fails"| X["Reject 401"]
