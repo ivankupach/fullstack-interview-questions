@@ -1,0 +1,9 @@
+flowchart TD
+    A["Mutation happened"] --> B{"Where are you?"}
+    B -->|"Server Action"| C{"Need read-your-writes?"}
+    B -->|"Route Handler / webhook"| D["revalidateTag(tag, 'max')"]
+    C -->|"yes"| E["updateTag(tag)"]
+    C -->|"no, stale OK"| D
+    B --> F["Path based: revalidatePath('/x')"]
+    E --> G["Next request waits for fresh data"]
+    D --> H["Serve stale, refresh in background"]

@@ -1,0 +1,7 @@
+flowchart TD
+    A["layout.tsx (Server)"] --> B["page.tsx (Server)"]
+    B --> C["ProductList (Server)"]
+    B --> D["Cart.tsx (use client)"]
+    D --> E["Button (Client, by import)"]
+    D -->|"children prop"| F["Server Component slot"]
+    C -->|"serializable props only"| D

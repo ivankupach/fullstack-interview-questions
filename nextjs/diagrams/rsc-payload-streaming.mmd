@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant B as Browser
+    participant S as Next server
+    participant D as Data source
+    B->>S: GET /dashboard
+    S-->>B: HTML shell + fallback (Suspense)
+    S->>D: fetch slow data
+    Note over B: Shows shell, loads JS
+    D-->>S: data
+    S-->>B: RSC chunk + inline script
+    Note over B: React swaps fallback for content
+    Note over B: Hydrate Client Components

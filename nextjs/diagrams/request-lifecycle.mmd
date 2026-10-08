@@ -1,0 +1,11 @@
+flowchart TD
+    A["Browser request"] --> B["proxy.ts"]
+    B -->|"redirect / rewrite"| C["Route match"]
+    B -->|"pass through"| C
+    C --> D{"Prerendered?"}
+    D -->|"yes"| E["Serve static shell from CDN"]
+    D -->|"no"| F["Render layouts + page (RSC)"]
+    E --> G["Stream dynamic holes"]
+    F --> H["Stream HTML + RSC payload"]
+    G --> I["Browser hydrates Client Components"]
+    H --> I

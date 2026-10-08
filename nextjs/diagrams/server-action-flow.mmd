@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant C as Client form
+    participant S as Server Action
+    participant DB as Database
+    participant K as Next cache
+    C->>S: POST (action ID + FormData)
+    Note over S: authenticate + authorize
+    Note over S: validate input (zod)
+    S->>DB: mutate
+    S->>K: updateTag / revalidatePath
+    S-->>C: result + fresh RSC payload
+    Note over C: UI updates in same round trip

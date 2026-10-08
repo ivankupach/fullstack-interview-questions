@@ -1,0 +1,9 @@
+flowchart TD
+    A["Page / component"] --> B{"Uses cookies, headers, searchParams, uncached fetch?"}
+    B -->|"no"| C["Static: prerendered at build"]
+    B -->|"yes"| D{"Wrap in Suspense?"}
+    D -->|"yes"| E["Static shell + streamed dynamic hole"]
+    D -->|"no"| F["Build error (Cache Components) or fully dynamic"]
+    C --> G{"Data changes over time?"}
+    G -->|"yes"| H["use cache + cacheLife / cacheTag"]
+    G -->|"no"| I["Cache forever (max)"]

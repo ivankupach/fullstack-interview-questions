@@ -1,0 +1,11 @@
+flowchart TD
+    A["Request"] --> B["Client Router Cache"]
+    B -->|"miss"| C["Full Route / static shell"]
+    C --> D["use cache entries"]
+    D -->|"miss"| E["fetch / DB / API"]
+    E --> D
+    D --> C
+    C --> B
+    F["updateTag / revalidateTag"] -.->|"invalidate"| D
+    G["revalidatePath"] -.->|"invalidate"| C
+    H["Request memoization (React cache)"] -.-> E

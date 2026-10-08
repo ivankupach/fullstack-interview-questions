@@ -1,0 +1,8 @@
+flowchart TD
+    A["app/layout.tsx"] --> B["children: page.tsx"]
+    A --> C["@modal slot"]
+    C --> D["default.tsx (null)"]
+    C --> E["(.)photos/[id]/page.tsx"]
+    B --> F["photos/[id]/page.tsx"]
+    G["Soft nav click"] --> E
+    H["Hard load / refresh"] --> F
