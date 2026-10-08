@@ -1,0 +1,4 @@
+flowchart LR
+  A["Backup and restore<br/>RPO hours, RTO 24h+<br/>lowest cost"] --> B["Pilot light<br/>RPO minutes, RTO ~1h<br/>data replicated, compute off"]
+  B --> C["Warm standby<br/>RPO seconds, RTO minutes<br/>scaled-down full copy"]
+  C --> D["Multi-site active-active<br/>RPO near 0, RTO near 0<br/>highest cost and complexity"]

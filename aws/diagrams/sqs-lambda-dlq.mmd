@@ -1,0 +1,9 @@
+flowchart LR
+  P["Producer"] --> Q["SQS queue"]
+  Q -- "poll in batches" --> ESM["Lambda event source mapping"]
+  ESM --> L["Lambda function"]
+  L -- "success: messages deleted" --> Q
+  L -- "failure: message reappears after visibility timeout" --> Q
+  Q -- "receive count above maxReceiveCount" --> DLQ["Dead-letter queue"]
+  DLQ --> AL["CloudWatch alarm on depth"]
+  DLQ -- "redrive after fix" --> Q

@@ -1,0 +1,14 @@
+flowchart TD
+  Req["Request"] --> D1{"Explicit Deny in any policy?"}
+  D1 -- Yes --> Deny["DENY"]
+  D1 -- No --> D2{"Organizations SCP allows?"}
+  D2 -- No --> Deny
+  D2 -- Yes --> D3{"Resource-based policy allows the principal?"}
+  D3 -- "Yes, same account" --> Allow["ALLOW"]
+  D3 -- "No, or cross-account" --> D4{"Permissions boundary allows?"}
+  D4 -- No --> Deny
+  D4 -- Yes --> D5{"Session policy allows?"}
+  D5 -- No --> Deny
+  D5 -- Yes --> D6{"Identity-based policy allows?"}
+  D6 -- Yes --> Allow
+  D6 -- No --> Deny

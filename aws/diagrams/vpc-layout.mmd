@@ -1,0 +1,22 @@
+flowchart TB
+  Internet(["Internet"]) --> IGW["Internet Gateway"]
+  subgraph VPC["VPC 10.0.0.0/16"]
+    subgraph AZa["AZ a"]
+      PubA["Public subnet: ALB, NAT GW"]
+      PrivA["Private subnet: app, ECS tasks"]
+      DataA["Isolated subnet: RDS, ElastiCache"]
+    end
+    subgraph AZb["AZ b"]
+      PubB["Public subnet: ALB, NAT GW"]
+      PrivB["Private subnet: app, ECS tasks"]
+      DataB["Isolated subnet: RDS, ElastiCache"]
+    end
+  end
+  IGW --> PubA
+  IGW --> PubB
+  PubA --> PrivA
+  PubB --> PrivB
+  PrivA --> DataA
+  PrivB --> DataB
+  PrivA -. "egress via NAT" .-> PubA
+  PrivB -. "egress via NAT" .-> PubB

@@ -1,0 +1,11 @@
+sequenceDiagram
+  participant GH as GitHub Actions job
+  participant OP as GitHub OIDC provider
+  participant STS as AWS STS
+  participant AWS as AWS services
+  GH->>OP: Request ID token (id-token write)
+  OP-->>GH: Signed JWT (sub, aud, repo, ref)
+  GH->>STS: AssumeRoleWithWebIdentity (JWT, role ARN)
+  Note over STS: Verify signature, aud, sub against trust policy
+  STS-->>GH: Temporary credentials (1 hour)
+  GH->>AWS: Deploy with temporary credentials

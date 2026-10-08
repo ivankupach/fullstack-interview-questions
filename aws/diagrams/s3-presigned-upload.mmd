@@ -1,0 +1,11 @@
+sequenceDiagram
+  participant B as Browser
+  participant A as Backend API
+  participant S as S3
+  B->>A: POST /uploads (filename, type, size)
+  Note over A: Authenticate, validate, build key
+  A-->>B: Presigned PUT URL (expires in minutes)
+  B->>S: PUT object directly to URL
+  S-->>B: 200 OK
+  S-)A: ObjectCreated event (SQS or EventBridge)
+  A->>A: Mark upload complete, process file

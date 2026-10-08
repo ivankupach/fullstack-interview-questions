@@ -1,0 +1,8 @@
+flowchart LR
+  U(["Browser"]) --> CF["CloudFront edge"]
+  CF -- "cache hit" --> U
+  CF -- "cache miss, SigV4 via OAC" --> S3[("Private S3 bucket")]
+  CF -- "/api/* behavior" --> APIGW["API Gateway or ALB"]
+  WAF["AWS WAF"] -.-> CF
+  ACM["ACM cert, us-east-1"] -.-> CF
+  Pol["Bucket policy: allow cloudfront.amazonaws.com when SourceArn = distribution"] -.-> S3

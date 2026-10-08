@@ -1,0 +1,14 @@
+flowchart TB
+  U(["Users"]) --> CF["CloudFront + WAF"]
+  CF -- "static assets" --> S3[("S3: SPA build")]
+  CF -- "/api/*" --> APIGW["API Gateway HTTP API"]
+  APIGW -- "JWT authorizer" --> COG["Cognito user pool"]
+  APIGW --> L["Lambda: API"]
+  L --> DDB[("DynamoDB")]
+  L -- "presigned URLs" --> UP[("S3: uploads")]
+  L -- "events" --> EB["EventBridge"]
+  EB --> SQS["SQS"] --> W["Lambda: workers"]
+  EB --> SF["Step Functions"]
+  W --> DDB
+  SQS -. "failures" .-> DLQ["DLQ"]
+  L -. "logs, traces" .-> CW["CloudWatch + X-Ray"]

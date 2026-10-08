@@ -1,0 +1,8 @@
+flowchart LR
+  Pub["Order service"] -- "OrderPlaced" --> T["SNS topic"]
+  T -- "filter: any" --> Q1["SQS: billing"]
+  T -- "filter: priority = high" --> Q2["SQS: fulfilment"]
+  T -- "filter: any" --> L["Lambda: analytics"]
+  T --> H["HTTPS: partner webhook"]
+  Q1 --> W1["Billing worker"]
+  Q2 --> W2["Fulfilment worker"]
