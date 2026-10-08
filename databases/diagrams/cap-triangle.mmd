@@ -1,0 +1,7 @@
+flowchart TD
+  C(["C: Consistency"])
+  A(["A: Availability"])
+  P(["P: Partition tolerance"])
+  C ---|"CA: single node only"| A
+  A ---|"AP: stale reads allowed<br/>Cassandra, Dynamo-style"| P
+  P ---|"CP: reject during split<br/>etcd, ZooKeeper"| C

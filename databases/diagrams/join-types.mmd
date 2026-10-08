@@ -1,0 +1,7 @@
+flowchart LR
+  A["Table A<br/>ids: 1, 2, 3"] --> J{"JOIN ON a.id = b.id"}
+  B["Table B<br/>ids: 2, 3, 4"] --> J
+  J --> INNER["INNER: 2, 3<br/>matches only"]
+  J --> LEFT["LEFT: 1, 2, 3<br/>all A, B or NULL"]
+  J --> RIGHT["RIGHT: 2, 3, 4<br/>all B, A or NULL"]
+  J --> FULL["FULL: 1, 2, 3, 4<br/>everything"]

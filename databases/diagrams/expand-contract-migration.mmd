@@ -1,0 +1,16 @@
+flowchart TB
+  subgraph A["Prepare"]
+    direction LR
+    P0["0. Start<br/>app reads/writes old column"]
+    P1["1. Expand<br/>add new column (nullable)"]
+    P2["2. Deploy<br/>app writes both"]
+    P0 --> P1 --> P2
+  end
+  subgraph B["Migrate"]
+    direction LR
+    P3["3. Backfill<br/>copy old to new in batches"]
+    P4["4. Switch<br/>app reads new column"]
+    P5["5. Contract<br/>stop writing old, drop it"]
+    P3 --> P4 --> P5
+  end
+  A --> B

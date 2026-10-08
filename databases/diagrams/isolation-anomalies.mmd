@@ -1,0 +1,15 @@
+sequenceDiagram
+  participant T1 as Txn 1
+  participant DB as Database
+  participant T2 as Txn 2
+  T1->>DB: BEGIN
+  T1->>DB: SELECT balance WHERE id=1
+  DB-->>T1: 100
+  T2->>DB: BEGIN
+  T2->>DB: UPDATE balance = 50 WHERE id=1
+  Note over T2,DB: Dirty read if T1 sees 50 before T2 commits
+  T2->>DB: COMMIT
+  T1->>DB: SELECT balance WHERE id=1
+  DB-->>T1: 50 (READ COMMITTED) or 100 (REPEATABLE READ)
+  Note over T1,DB: 50 here = non-repeatable read
+  T1->>DB: COMMIT

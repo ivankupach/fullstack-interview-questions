@@ -1,0 +1,13 @@
+sequenceDiagram
+  participant A as Doctor Alice (T1)
+  participant DB as Database (2 on call)
+  participant B as Doctor Bob (T2)
+  A->>DB: SELECT count(*) WHERE on_call
+  DB-->>A: 2
+  B->>DB: SELECT count(*) WHERE on_call
+  DB-->>B: 2
+  A->>DB: UPDATE alice SET on_call=false
+  B->>DB: UPDATE bob SET on_call=false
+  A->>DB: COMMIT
+  B->>DB: COMMIT
+  Note over DB: 0 on call: invariant broken, no row conflict

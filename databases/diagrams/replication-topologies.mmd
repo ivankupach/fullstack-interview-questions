@@ -1,0 +1,15 @@
+flowchart TB
+  subgraph LF["Leader-follower"]
+    direction LR
+    L["Leader"] --> F1["Follower 1"]
+    L --> F2["Follower 2"]
+  end
+  subgraph ML["Multi-leader"]
+    direction LR
+    M1["Leader EU"] <-->|"both accept writes"| M2["Leader US"]
+  end
+  subgraph LL["Leaderless (quorum)"]
+    direction LR
+    N1["Node A"] <-->|"any node accepts writes"| N2["Node B"] <--> N3["Node C"]
+  end
+  LF ~~~ ML ~~~ LL

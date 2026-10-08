@@ -1,0 +1,31 @@
+erDiagram
+  CUSTOMER ||--o{ ORDER : places
+  ORDER ||--|{ ORDER_ITEM : contains
+  PRODUCT ||--o{ ORDER_ITEM : "appears in"
+  CATEGORY ||--o{ PRODUCT : groups
+  CUSTOMER {
+    bigint id PK
+    text email
+    text name
+  }
+  ORDER {
+    bigint id PK
+    bigint customer_id FK
+    timestamptz created_at
+  }
+  ORDER_ITEM {
+    bigint order_id PK
+    bigint product_id PK
+    int quantity
+    numeric unit_price
+  }
+  PRODUCT {
+    bigint id PK
+    bigint category_id FK
+    text name
+    numeric price
+  }
+  CATEGORY {
+    bigint id PK
+    text name
+  }

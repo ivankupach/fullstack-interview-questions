@@ -1,0 +1,8 @@
+flowchart TD
+  APP["App servers"] --> RT["Shard router / lookup"]
+  RT -->|"hash(user_id) mod N = 0"| S0[("Shard 0")]
+  RT -->|"= 1"| S1[("Shard 1")]
+  RT -->|"= 2"| S2[("Shard 2")]
+  S0 --> R0[("Replica 0")]
+  S1 --> R1[("Replica 1")]
+  S2 --> R2[("Replica 2")]

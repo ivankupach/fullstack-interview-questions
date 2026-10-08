@@ -1,0 +1,22 @@
+flowchart TD
+  R["Root: 40 | 80"]
+  I1["Internal: 10 | 25"]
+  I2["Internal: 50 | 65"]
+  I3["Internal: 90 | 110"]
+  L1["Leaf: 1..9"]
+  L2["Leaf: 10..24"]
+  L3["Leaf: 25..39"]
+  L4["Leaf: 40..79"]
+  L5["Leaf: 80..120"]
+  H["Heap rows (table)"]
+  N["Leaves linked left to right"]
+  R --> I1
+  R --> I2
+  R --> I3
+  I1 --> L1
+  I1 --> L2
+  I1 --> L3
+  I2 --> L4
+  I3 --> L5
+  L4 -.->|"row pointers"| H
+  L1 -.- N
