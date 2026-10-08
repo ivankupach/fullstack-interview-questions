@@ -1,0 +1,16 @@
+flowchart TB
+  subgraph R1["Gate"]
+    direction LR
+    PR["Push / PR"] --> Static["Lint + typecheck"] --> Unit["Unit + integration, sharded"]
+  end
+  subgraph Shards["Parallel shards"]
+    direction LR
+    S1["Shard 1/3"]
+    S2["Shard 2/3"]
+    S3["Shard 3/3"]
+  end
+  subgraph R3["Verify and ship"]
+    direction LR
+    M["Merge reports + coverage"] --> E2E["E2E smoke on preview"] --> Deploy["Deploy + synthetic checks"]
+  end
+  R1 --> Shards --> R3

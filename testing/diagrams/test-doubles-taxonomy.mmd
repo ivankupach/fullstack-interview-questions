@@ -1,0 +1,9 @@
+flowchart TD
+  D["Test double"] --> Dummy["Dummy: filler, never used"]
+  D --> Stub["Stub: canned answers"]
+  D --> Spy["Spy: records calls"]
+  D --> Mock["Mock: pre-set expectations"]
+  D --> Fake["Fake: working lightweight impl"]
+  Stub -.->|"state verification"| S1["assert on result"]
+  Spy -.->|"behavior verification"| S2["assert on calls"]
+  Mock -.->|"behavior verification"| S2

@@ -1,0 +1,10 @@
+sequenceDiagram
+  participant C as Consumer tests
+  participant B as Pact Broker
+  participant P as Provider CI
+  Note over C: Pact mock tests
+  C->>B: Publish pact (contract)
+  P->>B: Fetch pacts for provider
+  Note over P: Replay on provider
+  P->>B: Publish verification result
+  B-->>C: can-i-deploy answer

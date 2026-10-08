@@ -1,0 +1,14 @@
+flowchart LR
+  subgraph P["Pyramid"]
+    direction TB
+    P1["E2E - few"] --> P2["Integration - some"] --> P3["Unit - many"]
+  end
+  subgraph T["Trophy"]
+    direction TB
+    T1["E2E - few"] --> T2["Integration - most"] --> T3["Unit - some"] --> T4["Static: types + lint"]
+  end
+  subgraph H["Honeycomb"]
+    direction TB
+    H1["Implemented: few"] --> H2["Integrations: most"] --> H3["Integrated: few"]
+  end
+  P ~~~ T ~~~ H

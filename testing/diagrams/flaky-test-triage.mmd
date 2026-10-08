@@ -1,0 +1,12 @@
+flowchart TD
+  F["Test fails intermittently"] --> Q1{"Fails in isolation?"}
+  Q1 -->|"No"| A["Shared state or order dependence"]
+  Q1 -->|"Yes, sometimes"| Q2{"Time or async involved?"}
+  Q2 -->|"Yes"| B["Missing await, sleeps, race: use auto-wait or fake timers"]
+  Q2 -->|"No"| Q3{"External dependency?"}
+  Q3 -->|"Yes"| C["Mock network or use containers"]
+  Q3 -->|"No"| D["Randomness, env, resource limits"]
+  A --> X["Fix root cause, quarantine meanwhile"]
+  B --> X
+  C --> X
+  D --> X
