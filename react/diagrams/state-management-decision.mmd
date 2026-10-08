@@ -1,0 +1,12 @@
+flowchart TD
+    A["Need to store state"] --> B{"Comes from<br/>the server?"}
+    B -- yes --> TQ["TanStack Query / SWR<br/>or framework loaders"]
+    B -- no --> C{"Belongs in<br/>the URL?"}
+    C -- yes --> URL["Router / search params"]
+    C -- no --> D{"Used by one<br/>component?"}
+    D -- yes --> L["useState / useReducer"]
+    D -- no --> E{"Shared by a<br/>nearby subtree?"}
+    E -- yes --> F["Lift state up<br/>or composition"]
+    E -- no --> G{"Changes often or<br/>many consumers?"}
+    G -- no --> CTX["Context<br/>(theme, auth, locale)"]
+    G -- yes --> ST["Zustand / Redux Toolkit<br/>with selectors"]

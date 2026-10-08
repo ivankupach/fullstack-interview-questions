@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant U as User
+    participant E as Effect
+    participant API as Server
+    U->>E: id = 1
+    E->>API: fetch(1)
+    U->>E: id = 2
+    Note over E: cleanup runs: abort fetch 1
+    E->>API: fetch(2)
+    API-->>E: response 2
+    Note over E: setState(data 2)
+    API--xE: response 1 aborted or ignored

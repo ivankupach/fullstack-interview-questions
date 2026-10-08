@@ -1,0 +1,13 @@
+flowchart TD
+    subgraph Server["Server (build or request time)"]
+        P["Page: Server Component<br/>async, reads DB"]
+        L["List: Server Component"]
+    end
+    subgraph Client["Browser"]
+        B["LikeButton<br/>'use client'"]
+        F["Filters<br/>'use client'"]
+    end
+    P --> L
+    P --> F
+    L --> B
+    P -. "RSC payload<br/>(serialized props)" .-> Client

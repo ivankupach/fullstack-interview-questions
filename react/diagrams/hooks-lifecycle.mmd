@@ -1,0 +1,7 @@
+flowchart TD
+    M["Mount: render (initial state, useMemo)<br/>commit (DOM created, refs attached)"] --> C["useLayoutEffect runs,<br/>then useEffect runs"]
+    C --> U{"State / props<br/>changed?"}
+    U -- yes --> E["Re-render and<br/>commit DOM updates"]
+    E --> G["Cleanup previous effects (changed deps),<br/>run effects again"]
+    G --> U
+    U -- unmount --> X["Cleanup of all effects,<br/>refs detached"]

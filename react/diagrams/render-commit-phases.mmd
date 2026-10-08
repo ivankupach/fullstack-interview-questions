@@ -1,0 +1,10 @@
+flowchart TB
+    subgraph Row1["Render then commit"]
+        direction LR
+        T["Trigger<br/>setState / props / context"] --> R["Render phase<br/>pure, interruptible<br/>call components, diff Fiber tree"] --> C["Commit phase<br/>synchronous, uninterruptible<br/>apply DOM mutations"]
+    end
+    subgraph Row2["Effects"]
+        direction LR
+        L["useLayoutEffect<br/>sync, before paint"] --> P["Browser paints"] --> E["useEffect<br/>after paint"]
+    end
+    Row1 --> Row2

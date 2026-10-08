@@ -1,0 +1,14 @@
+sequenceDiagram
+    participant R as React
+    participant C as Component
+    participant S as Suspense boundary
+    participant P as Promise
+    R->>C: render
+    C->>P: use(promise)
+    P-->>C: pending, suspends
+    C-->>R: throws to nearest boundary
+    R->>S: show fallback
+    P-->>R: resolved
+    R->>C: retry render
+    C-->>R: UI with data
+    R->>S: replace fallback with content

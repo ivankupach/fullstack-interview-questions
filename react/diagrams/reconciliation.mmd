@@ -1,0 +1,10 @@
+flowchart TD
+    S["Compare old and new element"] --> Q{"Same type<br/>at same position?"}
+    Q -- "no" --> N["Unmount old subtree<br/>mount new one<br/>(state lost)"]
+    Q -- "yes: DOM element" --> U1["Update changed attributes<br/>recurse into children"]
+    Q -- "yes: component" --> U2["Keep instance and state<br/>re-render with new props"]
+    U1 --> K{"Children are a list?"}
+    U2 --> K
+    K -- "yes" --> KK["Match children by key<br/>then by index"]
+    K -- "no" --> Z["Done"]
+    KK --> Z
