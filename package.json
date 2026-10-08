@@ -1,0 +1,15 @@
+{
+  "name": "fullstack-interview-questions",
+  "version": "1.0.0",
+  "scripts": {
+    "diagrams": "node scripts/render-diagrams.mjs",
+    "readme": "node scripts/build-readme-table.mjs"
+  },
+  "author": "",
+  "license": "MIT",
+  "description": "Fullstack interview questions with complete answers, code and diagrams",
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^12.0.0"
+  },
+  "private": true
+}
