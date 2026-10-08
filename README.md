@@ -18,17 +18,20 @@ Every question is tagged by level:
 | [TypeScript](./typescript/README.md) | Generics, narrowing, conditional & mapped types, tsconfig | 43 | 10 / 19 / 14 | 4 |
 | [React](./react/README.md) | Hooks, rendering, concurrent features, React 19, performance | 47 | 16 / 21 / 10 | 7 |
 | [Next.js](./nextjs/README.md) | App Router, Server Components, caching, Server Actions | 42 | 10 / 18 / 14 | 8 |
+| [React Native](./react-native/README.md) | New Architecture, Hermes, navigation, performance, Expo & releases | 45 | 12 / 20 / 13 | 8 |
 | [Backend](./backend/README.md) | Auth, caching, queues, concurrency, rate limiting, architecture | 46 | 13 / 20 / 13 | 9 |
 | [Node.js](./nodejs/README.md) | Event loop, libuv, streams, workers, production Node | 46 | 12 / 21 / 13 | 7 |
+| [NestJS](./nestjs/README.md) | Modules, DI & scopes, request lifecycle, guards, testing | 47 | 12 / 22 / 13 | 8 |
 | [Databases](./databases/README.md) | SQL, transactions, isolation, indexes, replication, NoSQL | 49 | 13 / 23 / 13 | 11 |
 | [PostgreSQL](./postgres/README.md) | MVCC, vacuum, EXPLAIN, index types, locking, replication | 50 | 11 / 23 / 16 | 8 |
 | [API Design](./api/README.md) | REST, GraphQL, gRPC, pagination, idempotency, versioning | 47 | 12 / 22 / 13 | 9 |
 | [DevOps](./devops/README.md) | Docker, Kubernetes, CI/CD, IaC, observability | 49 | 13 / 21 / 15 | 10 |
+| [AWS](./aws/README.md) | IAM, VPC, Lambda, S3, DynamoDB, SQS/SNS, DR & cost | 48 | 13 / 21 / 14 | 9 |
 | [Microservices](./microservices/README.md) | DDD, sagas, outbox, Kafka, resilience patterns | 42 | 8 / 20 / 14 | 10 |
 | [System Design](./system-design/README.md) | Concepts + case studies with architecture diagrams | 32 | 1 / 16 / 15 | 18 |
 | [Web Security](./security/README.md) | OWASP, XSS, CSRF, SSRF, auth & session security | 47 | 13 / 20 / 14 | 9 |
 | [Testing](./testing/README.md) | Unit/integration/e2e, RTL, Playwright, mocking, flaky tests | 41 | 11 / 19 / 11 | 6 |
-| **Total** | | **677** | | |
+| **Total** | | **817** | | |
 <!-- TOPICS:END -->
 
 ## How to use this repo
