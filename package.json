@@ -1,15 +1,43 @@
 {
   "name": "fullstack-interview-questions",
   "version": "1.0.0",
+  "description": "800+ fullstack interview questions and answers with code and diagrams: JavaScript, TypeScript, React, Next.js, Node.js, NestJS, PostgreSQL, System Design, AWS, DevOps",
+  "keywords": [
+    "interview-questions",
+    "interview-preparation",
+    "technical-interview",
+    "fullstack",
+    "javascript",
+    "typescript",
+    "react",
+    "nextjs",
+    "react-native",
+    "nodejs",
+    "nestjs",
+    "postgresql",
+    "sql",
+    "system-design",
+    "aws",
+    "devops",
+    "microservices",
+    "web-security"
+  ],
+  "homepage": "https://github.com/ivankupach/fullstack-interview-questions#readme",
+  "bugs": {
+    "url": "https://github.com/ivankupach/fullstack-interview-questions/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ivankupach/fullstack-interview-questions.git"
+  },
+  "author": "Ivan Kupach",
+  "license": "MIT",
+  "private": true,
   "scripts": {
     "diagrams": "node scripts/render-diagrams.mjs",
     "readme": "node scripts/build-readme-table.mjs"
   },
-  "author": "",
-  "license": "MIT",
-  "description": "Fullstack interview questions with complete answers, code and diagrams",
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "^12.0.0"
-  },
-  "private": true
+  }
 }
